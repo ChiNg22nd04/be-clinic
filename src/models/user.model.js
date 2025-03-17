@@ -1,31 +1,31 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../database/connect");
+const sequelize = require("../database/sequelize");
 
 const User = sequelize.define("User", {
 	id: {
-		type: DataTypes.Int,
+		type: DataTypes.INTEGER,
 		primaryKey: true,
 		autoIncrement: true,
 	},
 	email: {
-		type: DataTypes.Varchar(100),
+		type: DataTypes.VARCHAR(50),
 		allowNull: false,
 		unique: true,
 	},
 	password: {
-		type: DataTypes.Varchar(100),
+		type: DataTypes.VARCHAR(15),
 		allowNull: false,
 	},
 	fullname: {
-		type: DataTypes.NVarchar(100),
+		type: DataTypes.STRING(100),
 		allowNull: true,
 	},
 	phone: {
-		type: DataTypes.Varchar(20),
+		type: DataTypes.INTEGER,
 		allowNull: true,
 	},
 	username: {
-		type: DataTypes.Varchar(100),
+		type: DataTypes.VARCHAR(50),
 		allowNull: false,
 		unique: true,
 	},
@@ -34,7 +34,7 @@ const User = sequelize.define("User", {
 		defaultValue: DataTypes.NOW,
 	},
 	role: {
-		type: DataTypes.Int,
+		type: DataTypes.INTEGER,
 		allowNull: false,
 		validate: {
 			isIn: [[0, 1, 2]], // 0: Admin, 1: Doctor, 2: Patient
