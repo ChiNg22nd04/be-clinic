@@ -1,14 +1,14 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../database/connect");
+const sequelize = require("../database/sequelize");
 
 const DoctorProfile = sequelize.define("DoctorProfile", {
 	id: {
-		type: DataTypes.Int,
+		type: DataTypes.INTEGER, // int trong sql server
 		primaryKey: true,
 		autoIncrement: true,
 	},
 	doctorID: {
-		type: DataTypes.Int,
+		type: DataTypes.INTEGER,
 		unique: true,
 		references: {
 			model: "User",
@@ -17,11 +17,11 @@ const DoctorProfile = sequelize.define("DoctorProfile", {
 		onDelete: "CASCADE",
 	},
 	specialization: {
-		type: DataTypes.Varchar(100),
+		type: DataTypes.STRING(100), // nvarchar trong sql server
 		allowNull: false,
 	},
 	experience: {
-		type: DataTypes.Int,
+		type: DataTypes.INTEGER,
 		allowNull: true,
 	},
 });
