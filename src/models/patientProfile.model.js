@@ -1,36 +1,43 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../database/sequelize");
+const User = require("./user.model"); // Import model User
 
-const PatientProfile = sequelize.define("PatientProfile", {
-	id: {
-		type: DataTypes.INTEGER,
-		primaryKey: true,
-		autoIncrement: true,
-	},
-	patientID: {
-		type: DataTypes.INTEGER,
-		unique: true,
-		references: {
-			model: "User",
-			key: "id",
+const PatientProfile = sequelize.define(
+	"PatientProfile",
+	{
+		id: {
+			type: DataTypes.INTEGER,
+			primaryKey: true,
+			autoIncrement: true,
 		},
-		onDelete: "CASCADE",
-	},
-	dateOfBirth: {
-		type: DataTypes.DATE,
-		allowNull: true,
-	},
-	gender: {
-		type: DataTypes.INTEGER,
-		allowNull: false,
-		validate: {
-			isIn: [0, 1, 2], // 0: Nam, 1: Nữ, 2: Other
+		patientId: {
+			type: DataTypes.INTEGER,
+			unique: true,
+			references: {
+				model: User, // Tham chiếu đến model User
+				key: "id",
+			},
+			onDelete: "CASCADE",
+		},
+		dateOfBirth: {
+			type: DataTypes.DATE,
+			allowNull: true,
+		},
+		gender: {
+			type: DataTypes.INTEGER,
+			allowNull: false,
+			validate: {
+				isIn: [[0, 1, 2]], // 0: Nam, 1: Nữ, 2: Other
+			},
+		},
+		address: {
+			type: DataTypes.STRING(100),
+			allowNull: true,
 		},
 	},
-	address: {
-		type: DataTypes.STRING(100),
-		allowNull: true,
-	},
-});
+	{
+		timestamps: true, // Bật createdAt, updatedAt
+	}
+);
 
 module.exports = PatientProfile;
