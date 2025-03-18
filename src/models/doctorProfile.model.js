@@ -1,5 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../database/sequelize");
+const User = require("./user.model");
 
 const DoctorProfile = sequelize.define("DoctorProfile", {
 	id: {
@@ -11,7 +12,7 @@ const DoctorProfile = sequelize.define("DoctorProfile", {
 		type: DataTypes.INTEGER,
 		unique: true,
 		references: {
-			model: "User",
+			model: User,
 			key: "id",
 		},
 		onDelete: "CASCADE",

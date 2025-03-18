@@ -1,24 +1,50 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../database/sequelize");
+const PatientProfile = require("./patientProfile.model");
+const DoctorProfile = require("./doctorProfile.model");
 
-const MedicalRecords = sequelize.define("MedicalRecords", {
-	id: {
-		type: DataTypes.INTEGER,
-		autoIncrement: true,
-	},
-	patientId: {
-		type: DataTypes.INTEGER,
-		unique: true,
-		references: {
-			model: "PatientProfile",
-			key: "patientID",
+const Appointments = sequelize.define(
+	"Appointments",
+	{
+		id: {
+			type: DataTypes.INTEGER,
+			autoIncrement: true,
+			primaryKey: true,
 		},
-		onDelete: "CASCADE",
+		patientId: {
+			type: DataTypes.INTEGER,
+			unique: true,
+			references: {
+				model: PatientProfile,
+				key: "patientId",
+			},
+		},
+		doctorId: {
+			type: DataTypes.INTEGER,
+			unique: true,
+			references: {
+				model: DoctorProfile,
+				key: "doctorId",
+			},
+		},
+		symptoms: {
+			type: DataTypes.STRING(100),
+			allowNull: true,
+		},
+		appointmentDate: {
+			type: DataTypes.DATE,
+			allowNull: false,
+		},
+		status: {
+			type: DataTypes.INTEGER,
+			validate: {
+				isIn: [[0, 1, 2]], //0: Pending, 1: Confirmed, 2: Completed
+			},
+			defaultValue: 0,
+		},
 	},
-	createAt: {
-		type: DataTypes.DATE,
-		defaultValue: DataTypes.NOW,
-	},
-});
-
-module.exports = MedicalRecords;
+	{
+		timestamps: true, // Bật createdAt và updatedAt tự động
+	}
+);
+module.exports = Appointments;
