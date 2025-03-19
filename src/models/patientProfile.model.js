@@ -1,6 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../database/sequelize");
-const User = require("./user.model"); // Import model User
+const User = require("./users.model"); // Import model User
 
 const PatientProfile = sequelize.define(
 	"PatientProfile",
@@ -18,7 +18,7 @@ const PatientProfile = sequelize.define(
 				key: "id",
 			},
 			onDelete: "CASCADE",
-			allowNull: false
+			allowNull: false,
 		},
 		dateOfBirth: {
 			type: DataTypes.DATE,

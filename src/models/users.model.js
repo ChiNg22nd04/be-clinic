@@ -1,8 +1,8 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../database/sequelize");
+const { sequelize } = require("../database/sequelize");
 
-const User = sequelize.define(
-	"User",
+const Users = sequelize.define(
+	"Users",
 	{
 		id: {
 			type: DataTypes.INTEGER,
@@ -15,7 +15,7 @@ const User = sequelize.define(
 			unique: true,
 		},
 		password: {
-			type: DataTypes.STRING(15),
+			type: DataTypes.STRING(255), // Tăng độ dài để tránh lỗi
 			allowNull: false,
 		},
 		fullName: {
@@ -23,7 +23,7 @@ const User = sequelize.define(
 			allowNull: true,
 		},
 		phone: {
-			type: DataTypes.INTEGER, // Đổi từ INTEGER thành STRING
+			type: DataTypes.STRING, // Đổi từ INTEGER thành STRING để lưu số điện thoại
 			allowNull: true,
 		},
 		username: {
@@ -49,4 +49,4 @@ const User = sequelize.define(
 	}
 );
 
-module.exports = User;
+module.exports = Users; 
