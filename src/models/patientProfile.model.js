@@ -18,6 +18,7 @@ const PatientProfile = sequelize.define(
 				key: "id",
 			},
 			onDelete: "CASCADE",
+			allowNull: false
 		},
 		dateOfBirth: {
 			type: DataTypes.DATE,

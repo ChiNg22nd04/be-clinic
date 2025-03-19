@@ -8,7 +8,7 @@ const DoctorProfile = sequelize.define("DoctorProfile", {
 		primaryKey: true,
 		autoIncrement: true,
 	},
-	doctorID: {
+	doctorId: {
 		type: DataTypes.INTEGER,
 		unique: true,
 		references: {
@@ -16,6 +16,7 @@ const DoctorProfile = sequelize.define("DoctorProfile", {
 			key: "id",
 		},
 		onDelete: "CASCADE",
+		allowNull: false
 	},
 	specialization: {
 		type: DataTypes.STRING(100), // nvarchar trong sql server

@@ -13,7 +13,6 @@ const Appointments = sequelize.define(
 		},
 		patientId: {
 			type: DataTypes.INTEGER,
-			unique: true,
 			references: {
 				model: PatientProfile,
 				key: "patientId",
@@ -21,7 +20,6 @@ const Appointments = sequelize.define(
 		},
 		doctorId: {
 			type: DataTypes.INTEGER,
-			unique: true,
 			references: {
 				model: DoctorProfile,
 				key: "doctorId",
