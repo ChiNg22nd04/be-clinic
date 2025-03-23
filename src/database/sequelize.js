@@ -5,7 +5,7 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
 	host: process.env.DB_HOST,
 	dialect: process.env.DB_DIALECT,
 	port: process.env.DB_PORT,
-	logging: false, // Disable SQL logging
+	logging: console.log, // Disable SQL logging or Bật logging để debug SQL query
 });
 
 const connectDB = async () => {
@@ -18,4 +18,4 @@ const connectDB = async () => {
 	}
 };
 
-module.exports = connectDB;
+module.exports = { sequelize, connectDB };
