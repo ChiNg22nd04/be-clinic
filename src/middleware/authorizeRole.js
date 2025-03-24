@@ -1,4 +1,4 @@
-const User = require("../models/users.model");
+const User = require("../models/user.model");
 
 const authorizeRole = async (req, res, next) => {
 	if (req.authenticatedUser.role === requiredRole) {

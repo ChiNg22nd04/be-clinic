@@ -1,6 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../database/sequelize");
-const User = require("./users.model"); // Import model User
+const User = require("./user.model"); // Import model User
 
 const PatientProfile = sequelize.define(
 	"PatientProfile",
@@ -23,6 +23,7 @@ const PatientProfile = sequelize.define(
 		dateOfBirth: {
 			type: DataTypes.DATE,
 			allowNull: true,
+			defaultValue: null,
 		},
 		gender: {
 			type: DataTypes.INTEGER,
@@ -34,6 +35,7 @@ const PatientProfile = sequelize.define(
 		address: {
 			type: DataTypes.STRING(100),
 			allowNull: true,
+			defaultValue: null,
 		},
 	},
 	{

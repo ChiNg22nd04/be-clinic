@@ -28,6 +28,7 @@ const Appointments = sequelize.define(
 		symptoms: {
 			type: DataTypes.STRING(100),
 			allowNull: true,
+			defaultValue: null,
 		},
 		appointmentDate: {
 			type: DataTypes.DATE,

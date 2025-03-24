@@ -23,6 +23,7 @@ const DoctorProfile = sequelize.define("DoctorProfile", {
 	experience: {
 		type: DataTypes.Int,
 		allowNull: true,
+		defaultValue: null,
 	},
 });
 

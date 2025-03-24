@@ -1,6 +1,6 @@
 const bcrypt = require("bcrypt");
 const express = require("express");
-const User = require("../models/users.model");
+const User = require("../models/user.model");
 
 const scheduleAppointment = async (req, res, next) => {
 	try {

@@ -16,7 +16,7 @@ const DoctorProfile = sequelize.define("DoctorProfile", {
 			key: "id",
 		},
 		onDelete: "CASCADE",
-		allowNull: false
+		allowNull: false,
 	},
 	specialization: {
 		type: DataTypes.STRING(100), // nvarchar trong sql server
@@ -25,6 +25,7 @@ const DoctorProfile = sequelize.define("DoctorProfile", {
 	experience: {
 		type: DataTypes.INTEGER,
 		allowNull: true,
+		defaultValue: null,
 	},
 });
 

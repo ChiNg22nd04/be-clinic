@@ -1,8 +1,7 @@
 const { DataTypes } = require("sequelize");
 const { sequelize } = require("../database/sequelize");
-
-const Users = sequelize.define(
-	"Users",
+const User = sequelize.define(
+	"User",
 	{
 		id: {
 			type: DataTypes.INTEGER,
@@ -10,25 +9,29 @@ const Users = sequelize.define(
 			autoIncrement: true,
 		},
 		email: {
-			type: DataTypes.STRING(50),
+			type: DataTypes.STRING(100),
 			allowNull: false,
 			unique: true,
 		},
 		password: {
-			type: DataTypes.STRING(255), // Tăng độ dài để tránh lỗi
+			type: DataTypes.STRING(255),
 			allowNull: false,
 		},
 		fullName: {
 			type: DataTypes.STRING(100),
 			allowNull: true,
+			defaultValue: null,
+			collate: "SQL_Latin1_General_CP1_CI_AS",
 		},
 		phone: {
-			type: DataTypes.STRING, // Đổi từ INTEGER thành STRING để lưu số điện thoại
+			type: DataTypes.STRING(15),
 			allowNull: true,
+			defaultValue: null,
 		},
 		username: {
 			type: DataTypes.STRING(50),
 			allowNull: true,
+			defaultValue: null,
 			unique: true,
 		},
 		createdAt: {
@@ -39,14 +42,16 @@ const Users = sequelize.define(
 			type: DataTypes.INTEGER,
 			allowNull: false,
 			validate: {
-				isIn: [[0, 1, 2]], // 0: Admin, 1: Doctor, 2: Patient
+				isIn: [[0, 1, 2]],
 			},
 			defaultValue: 2,
 		},
 	},
 	{
-		timestamps: true, // Bật createdAt và updatedAt tự động
+		tableName: "[User]", // Chỉ định rõ tên bảng
+		timestamps: true,
+		updatedAt: false,
 	}
 );
 
-module.exports = Users; 
+module.exports = User;

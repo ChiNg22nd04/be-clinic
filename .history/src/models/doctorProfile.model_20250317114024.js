@@ -19,10 +19,12 @@ const User = sequelize.define("User", {
 	fullname: {
 		type: DataTypes.NVarchar(100),
 		allowNull: true,
+		defaultValue: null,
 	},
 	phone: {
 		type: DataTypes.Varchar(20),
 		allowNull: true,
+		defaultValue: null,
 	},
 	username: {
 		type: DataTypes.Varchar(100),
