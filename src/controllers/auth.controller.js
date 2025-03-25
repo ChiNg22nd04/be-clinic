@@ -12,19 +12,22 @@ const register = async (req, res, next) => {
 				.status(400)
 				.json({ message: "Email and Password cannot be null", data: req.body });
 
-		const result = await sequelize.query("SELECT TOP 1 * FROM [User] WHERE email = :email", {
+		const user = await sequelize.query(`SELECT TOP 1 * FROM [User] WHERE email = :email`, {
 			replacements: { email },
 			type: sequelize.QueryTypes.SELECT,
 		});
 
-		const isEmail = result.length ? result[0] : null;
-		if (isEmail) return res.status(400).json({ message: "Email is existed", data: req.body });
+		const isUser = user.length ? user[0] : null;
+		if (isUser) return res.status(400).json({ message: "Email is existed", data: req.body });
 
 		const salt = await bcrypt.genSalt(10);
-		const hashPassword = await bcrypt.hash(req.body.password, salt);
+		const hashPassword = await bcrypt.hash(password, salt);
 
-		const newUser = await sequelize.query(
-			"INSERT INTO [User] (email, password, full_name, username, phone, role) VALUES (:email, :password, :full_name, :username, :phone, :role);SELECT SCOPE_IDENTITY() AS id;",
+		// OUTPUT INSERTED.* lấy dữ liệu mà không cần truy vấn lại
+		const [newUser] = await sequelize.query(
+			`INSERT INTO [User] (email, password, full_name, username, phone, role) 
+             OUTPUT INSERTED.* 
+             VALUES (:email, :password, :full_name, :username, :phone, :role);`,
 			{
 				replacements: {
 					email,
@@ -37,41 +40,35 @@ const register = async (req, res, next) => {
 				type: sequelize.QueryTypes.INSERT,
 			}
 		);
-		return res.status(201).json({ message: "Register success", data: newUser });
+
+		console.log([newUser]);
+		return res.status(201).json({ message: "Register success", data: [newUser] });
 	} catch (error) {
 		console.error("Register fail:", error);
 		res.status(500).json({ error: "Server error", details: error.message });
 	}
 };
 
-// const result = await sequelize.query("SELECT * FROM [User] WHERE email = :email", {
-// 	replacements: { email },
-// 	type: sequelize.QueryTypes.SELECT,
-// });
-// const isEmail = result.length ? result[0] : null;
-// if (isEmail) return res.status(400).json({ message: "Email is existed", data: req.body });
-
 const login = async (req, res) => {
 	try {
 		const { email, password } = req.body;
 		console.log(req.body);
-
-		const user = await User.findOne({ where: { email } });
-		console.log(user);
-		if (!user) {
-			return res.status(400).json({ message: "User is not found", data: req.body });
+		const [user] = await sequelize.query(`SELECT * FROM [User] WHERE email = :email`, {
+			replacements: { email },
+			type: sequelize.QueryTypes.SELECT,
+		});
+		const isUser = [user].length ? [user][0] : null;
+		console.log(isUser);
+		if (!isUser) {
+			return res.status(404).json({ message: "User is not found", data: req.body });
 		}
-
 		if (!user.isActive) {
 			return res.status(403).json({ message: "Account is disabled", data: req.body });
 		}
-
 		const passwordIsValid = bcrypt.compareSync(password, user.password);
 		if (!passwordIsValid) {
 			return res.status(401).json({ message: "Password is incorrect", data: req.body });
 		}
-
-		// 🔹 Luôn tạo token mới khi đăng nhập
 		const token = jwt.sign(
 			{ id: user.id, email: user.email, role: user.role },
 			process.env.SECRET_KEY,
@@ -93,8 +90,6 @@ const login = async (req, res) => {
 		return res.status(500).json({ message: "Server error", details: error.message });
 	}
 };
-
-module.exports = { login };
 
 module.exports = {
 	register,
