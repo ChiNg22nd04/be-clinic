@@ -1,5 +1,5 @@
 const { DataTypes } = require("sequelize");
-const sequelize = require("../database/sequelize");
+const { sequelize } = require("../database/sequelize");
 const User = require("./user.model"); // Import model User
 
 const PatientProfile = sequelize.define(
@@ -42,5 +42,4 @@ const PatientProfile = sequelize.define(
 		timestamps: true, // Bật createdAt, updatedAt
 	}
 );
-
 module.exports = PatientProfile;
