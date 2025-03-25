@@ -50,6 +50,15 @@ const User = sequelize.define(
 			type: DataTypes.BOOLEAN,
 			defaultValue: true, // convert false: 0, true: 1
 		},
+		isVerified: {
+			type: DataTypes.BOOLEAN,
+			defaultValue: false, // convert false: 0, true: 1
+		},
+		verificationCode: {
+			type: DataTypes.INTEGER,
+			allowNull: true,
+			defaultValue: null,
+		},
 	},
 	{
 		tableName: "[User]", // Chỉ định rõ tên bảng
