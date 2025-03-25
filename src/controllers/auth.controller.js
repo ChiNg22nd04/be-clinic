@@ -103,7 +103,7 @@ const login = async (req, res) => {
 	}
 };
 
-const resendOTP = async (req, res) => {
+const forgetPassword = async (req, res) => {
 	try {
 		const { email } = req.body;
 
@@ -171,6 +171,6 @@ const verifyOTP = async (req, res) => {
 module.exports = {
 	register,
 	login,
-	resendOTP,
+	forgetPassword,
 	verifyOTP,
 };
