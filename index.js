@@ -6,6 +6,10 @@ const router = require("./src/routes/index");
 const app = express();
 
 const { connectDB } = require("./src/database/sequelize");
+app.use((req, res, next) => {
+	console.log(`📥 Received request: ${req.method} ${req.url}`);
+	next();
+});
 
 // Middleware để phân tích cú pháp yêu cầu có nội dung JSON
 app.use(bodyParser.json());
