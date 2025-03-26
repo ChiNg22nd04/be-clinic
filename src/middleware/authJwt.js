@@ -26,6 +26,8 @@ const verifyToken = (req, res, next) => {
 
 		// Lưu user vào request để các middleware/controller khác dùng
 		req.user = decoded;
+		console.log("✅ User authenticated:", req.user);
+
 		next();
 	});
 };
