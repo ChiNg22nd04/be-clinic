@@ -1,16 +1,24 @@
-const User = require("../models/user.model");
+const authorizeRole = (...allowedRoles) => {
+	return (req, res, next) => {
+		if (!req.user) {
+			console.log("❌ User not authenticated!");
+			return res.status(401).json({ message: "Unauthorized: No user found" });
+		}
 
-const authorizeRole = async (req, res, next) => {
-	if (req.authenticatedUser.role === requiredRole) {
-		return next();
-	}
-	return res.status(403).send({
-		message: "Account does not have permission to do this!",
-	}); // Nếu vai trò không khớp, trả về 403
+		console.log("🔍 Checking user role:", req.user.role);
+
+		if (!allowedRoles.includes(req.user.role)) {
+			console.log("❌ Forbidden: User does not have permission");
+			return res
+				.status(403)
+				.json({ message: "Forbidden: You do not have permission to access this resource" });
+		}
+
+		console.log("✅ Role authorized");
+		next();
+	};
 };
 
-const authorize = {
-	authorizeRole: authorizeRole,
+module.exports = {
+	authorizeRole,
 };
-
-module.exports = authorize;

@@ -2,28 +2,32 @@ const jwt = require("jsonwebtoken");
 
 const { TokenExpiredError } = jwt;
 
+// Hàm xử lý lỗi token
 const catchError = (err, res) => {
 	if (err instanceof TokenExpiredError) {
-		return res.status(401).send({ message: "Unauthorized! Access Token was expired!" });
+		return res.status(401).send({ message: "Unauthorized! Access Token has expired!" });
 	}
-
 	return res.status(401).send({ message: "Unauthorized!" });
 };
 
+// Middleware xác thực token
 const verifyToken = (req, res, next) => {
 	const token = req.header("Authorization")?.replace("Bearer ", "");
 	if (!token) {
-		return res.status(403).send({
-			message: "No token provided!",
-		});
+		console.log("❌ No token provided!");
+		return res.status(403).send({ message: "No token provided!" });
 	}
 
 	jwt.verify(token, process.env.JWT_KEY, (err, decoded) => {
 		if (err) {
 			return catchError(err, res);
 		}
-		//Từ token mình biết được nó là của người dùng nào và gắn ở đây để gửi sang controller sau dùng.
-		req.authenticatedUser = decoded.user;
+		console.log("✅ User authenticated:", decoded);
+
+		// Lưu user vào request để các middleware/controller khác dùng
+		req.user = decoded;
+		console.log("✅ User authenticated:", req.user);
+
 		next();
 	});
 };
