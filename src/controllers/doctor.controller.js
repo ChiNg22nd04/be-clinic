@@ -69,7 +69,7 @@ const updateExaminationForm = async (req, res) => {
 		});
 		console.log("data", data);
 		res.status(200).json({
-			message: "Detail examinationForm fetched successfully",
+			message: "Detail examinationForm successfully",
 			data: data,
 		});
 	} catch (err) {
@@ -78,4 +78,37 @@ const updateExaminationForm = async (req, res) => {
 	}
 };
 
-module.exports = { getListExaminationForm, getExaminationForm, updateExaminationForm };
+const updatePrescription = async (req, res) => {
+	try {
+		const { id, medicineId, quantity, usage } = req.body;
+		console.log("id", id);
+		const [detail] = await sequelize.query(
+			`INSERT INTO [Prescription] (examination_form_id, medicine_id, quantity, usage)
+				VALUES (:examinationFormId, :medicineId, :quantity, :usage);`,
+			{
+				replacements: {
+					examinationFormId: id,
+					medicineId,
+					quantity,
+					usage,
+				},
+				type: sequelize.QueryTypes.INSERT,
+			}
+		);
+		console.log(detail);
+		res.status(200).json({
+			message: "Update prescriptions successfully",
+			data: detail,
+		});
+	} catch (err) {
+		console.error("Error in making update prescription:", err);
+		res.status(500).json({ message: "Server error, please try again later." });
+	}
+};
+
+module.exports = {
+	getListExaminationForm,
+	getExaminationForm,
+	updateExaminationForm,
+	updatePrescription,
+};
