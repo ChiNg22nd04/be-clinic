@@ -37,7 +37,7 @@ const register = async (req, res) => {
 					full_name: fullName || null,
 					username: username || null,
 					phone: phone || null,
-					role: Number(role) || 2,
+					role: Number(role) || 3,
 					verification_code: verificationCode,
 				},
 				type: sequelize.QueryTypes.INSERT,
