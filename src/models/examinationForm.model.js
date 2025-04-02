@@ -28,23 +28,26 @@ const ExaminationForm = sequelize.define(
 			},
 			onDelete: "CASCADE",
 		},
-		paymentStatus: {
+		doctorId: {
 			type: DataTypes.INTEGER,
-			validate: {
-				isIn: [[0, 1, 2]], // 0: Pending, 1: Completed, 2: Failed
+			references: {
+				model: DoctorProfile,
+				key: "doctorId",
 			},
-			defaultValue: 0,
 		},
-		paymentMethod: {
-			type: DataTypes.INTEGER,
-			validate: {
-				isIn: [[0, 1, 2, 3]], // 0: Cash, 1: Card, 2: InternetBanking, 3: Other
-			},
-			defaultValue: 0,
-		},
-		createAt: {
+		examinationDate: {
 			type: DataTypes.DATE,
 			defaultValue: DataTypes.NOW,
+		},
+		diagnosis: {
+			type: DataTypes.STRING(255),
+			allowNull: true,
+			defaultValue: null,
+		},
+		note: {
+			type: DataTypes.STRING(255),
+			allowNull: true,
+			defaultValue: null,
 		},
 	},
 	{
