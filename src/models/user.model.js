@@ -42,7 +42,7 @@ const User = sequelize.define(
 			type: DataTypes.INTEGER,
 			allowNull: false,
 			validate: {
-				isIn: [[0, 1, 2]], // 0: Admin, 1: Doctor, 2: User
+				isIn: [[0, 1, 2, 3]], // 0: Admin, 1: Doctor, 2: receptionist, 3: Patient
 			},
 			defaultValue: 2,
 		},

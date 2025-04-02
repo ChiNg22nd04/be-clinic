@@ -34,6 +34,7 @@ const createPatientProfile = async (patientId) => {
 		throw new Error("Error creating patient profile.");
 	}
 };
+
 const scheduleAppointment = async (req, res) => {
 	try {
 		const { doctorId, appointmentDate, symptoms } = req.body;
@@ -42,20 +43,11 @@ const scheduleAppointment = async (req, res) => {
 			return res.status(400).json({ message: "Please fill in the required fields" });
 
 		// Kiểm tra định dạng ngày
-		const formattedDateString = moment(
-			appointmentDate,
-			["YYYY-M-D", "YYYY-MM-DD"],
-			true
-		).format("YYYY-MM-DD");
-		const isDate = moment(formattedDateString, "YYYY-MM-DD", true);
-
-		console.log("formattedDateString", formattedDateString);
-		console.log("isDate", isDate.isValid());
-
-		if (!isDate.isValid()) {
+		const formattedDateString = moment(appointmentDate, "YYYY-MM-DD HH:mm:ss", true);
+		if (!formattedDateString.isValid()) {
 			return res.status(400).json({ message: "Invalid appointment date." });
 		}
-		const formattedDate = moment(formattedDateString).format("YYYY-MM-DD HH:mm:ss");
+		const formattedDate = formattedDateString.format("YYYY-MM-DD HH:mm:ss");
 
 		const patientId = req.user.id;
 		console.log("patientId", patientId);
@@ -87,7 +79,7 @@ const scheduleAppointment = async (req, res) => {
 		);
 
 		res.status(201).json({
-			message: "Appointment successful ",
+			message: "Appointment successful",
 			appointment: {
 				patientId,
 				doctorId: doctor.doctor_id,
