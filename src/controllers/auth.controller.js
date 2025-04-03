@@ -1,7 +1,6 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const { sequelize } = require("../database/sequelize");
-const User = require("../models/user.model");
 require("dotenv").config();
 const verificationCode = Math.floor(100000 + Math.random() * 900000); // Tạo mã 6 số
 
@@ -16,17 +15,8 @@ const register = async (req, res) => {
 	try {
 		const { email, password, fullName, username, phone, role } = req.body;
 
-		// Kiểm tra email đã tồn tại chưa
-		const user = await sequelize.query(`SELECT TOP 1 * FROM [User] WHERE email = :email`, {
-			replacements: { email },
-			type: sequelize.QueryTypes.SELECT,
-		});
-		if (user.length) return res.status(400).json({ message: "Email is existed" });
+		const hashPassword = await bcrypt.hash(password, 10);
 
-		// Hash password
-		const salt = await bcrypt.genSalt(10);
-		const hashPassword = await bcrypt.hash(password, salt);
-		// Lưu user vào database với mã xác nhận
 		await sequelize.query(
 			`INSERT INTO [User] (email, password, full_name, username, phone, role, verification_code) 
              VALUES (:email, :password, :full_name, :username, :phone, :role, :verification_code);`,
@@ -37,14 +27,16 @@ const register = async (req, res) => {
 					full_name: fullName || null,
 					username: username || null,
 					phone: phone || null,
-					role: Number(role) || 3,
+					role: Number(role) || 3, 
 					verification_code: verificationCode,
 				},
 				type: sequelize.QueryTypes.INSERT,
 			}
 		);
+
 		await sendVerificationEmail(email, verificationCode);
-		return res.status(201).json({ message: "Register success, check email to verify" });
+
+		res.status(201).json({ message: "Register success, check email to verify" });
 	} catch (error) {
 		console.error("Register fail:", error);
 		res.status(500).json({ error: "Server error", details: error.message });
