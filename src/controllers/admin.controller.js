@@ -78,7 +78,8 @@ const createStaff = async (req, res) => {
 			type: sequelize.QueryTypes.SELECT,
 		});
 
-		
+		const roleData = data.role;
+		console.log(roleData);
 
 		res.status(201).json({
 			message: "Staff created successfully",

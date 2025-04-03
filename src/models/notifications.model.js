@@ -19,8 +19,9 @@ const Notifications = sequelize.define(
 			onDelete: "CASCADE",
 		},
 		message: {
-			type: DataTypes.STRING,
+			type: DataTypes.STRING(255),
 			allowNull: false,
+			collate: "SQL_Latin1_General_CP1_CI_AS",
 		},
 		isRead: {
 			type: DataTypes.BOOLEAN, // convert false: 0, true: 1

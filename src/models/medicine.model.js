@@ -12,10 +12,12 @@ const Medicine = sequelize.define(
 		name: {
 			type: DataTypes.STRING(100),
 			allowNull: false,
+			collate: "SQL_Latin1_General_CP1_CI_AS",
 		},
 		description: {
 			type: DataTypes.STRING(255),
 			allowNull: false,
+			collate: "SQL_Latin1_General_CP1_CI_AS",
 		},
 		price: {
 			type: DataTypes.DECIMAL(10, 2),

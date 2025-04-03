@@ -34,6 +34,7 @@ const Prescription = sequelize.define(
 		usage: {
 			type: DataTypes.STRING(100),
 			allowNull: false,
+			collate: "SQL_Latin1_General_CP1_CI_AS",
 		},
 	},
 	{
