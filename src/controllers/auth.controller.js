@@ -27,7 +27,7 @@ const register = async (req, res) => {
 					full_name: fullName || null,
 					username: username || null,
 					phone: phone || null,
-					role: Number(role) || 3, 
+					role: Number(role) || 3,
 					verification_code: verificationCode,
 				},
 				type: sequelize.QueryTypes.INSERT,
@@ -45,7 +45,7 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
 	try {
-		const { email, password } = req.body;
+		const { email, password, verificationCode } = req.body;
 
 		const [user] = await sequelize.query(`SELECT * FROM [User] WHERE email = :email`, {
 			replacements: { email },
@@ -58,6 +58,11 @@ const login = async (req, res) => {
 			return res.status(403).json({ message: "Please verify your email before login." });
 		}
 
+		await sequelize.query(
+			//verification_code = NULL
+			`UPDATE [User] SET is_verified = 1 WHERE email = :email`,
+			{ replacements: { email }, type: sequelize.QueryTypes.UPDATE }
+		);
 		if (!user.is_active) {
 			await sendAccountDisabledEmail(
 				email,
@@ -163,41 +168,10 @@ const resendOPT = async (req, res) => {
 	}
 };
 
-const verifyOTP = async (req, res) => {
-	try {
-		const { email, verificationCode } = req.body;
-
-		const [user] = await sequelize.query(`SELECT * FROM [User] WHERE email = :email`, {
-			replacements: { email },
-			type: sequelize.QueryTypes.SELECT,
-		});
-
-		if (!user) return res.status(404).json({ message: "User not found" });
-		if (user.is_verified) return res.status(400).json({ message: "User already verified" });
-
-		if (user.verification_code !== Number(verificationCode)) {
-			return res.status(400).json({ message: "Invalid verification code" });
-		}
-
-		// Xác thực thành công -> cập nhật isVerified
-		await sequelize.query(
-			//verification_code = NULL
-			`UPDATE [User] SET is_verified = 1 WHERE email = :email`,
-			{ replacements: { email }, type: sequelize.QueryTypes.UPDATE }
-		);
-
-		await sendAccountActivatedEmail(email);
-		return res.status(200).json({ message: "Verification successful" });
-	} catch (error) {
-		console.error("Verification error:", error);
-		res.status(500).json({ error: "Server error", details: error.message });
-	}
-};
 
 module.exports = {
 	register,
 	login,
 	forgetPassword,
-	verifyOTP,
 	resendOPT,
 };
