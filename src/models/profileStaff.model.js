@@ -2,13 +2,13 @@ const { DataTypes } = require("sequelize");
 const { sequelize } = require("../database/sequelize");
 const User = require("./user.model");
 
-const DoctorProfile = sequelize.define("DoctorProfile", {
+const ProfileStaff = sequelize.define("ProfileStaff", {
 	id: {
 		type: DataTypes.INTEGER, // int trong sql server
 		primaryKey: true,
 		autoIncrement: true,
 	},
-	doctorId: {
+	staffId: {
 		type: DataTypes.INTEGER,
 		unique: true,
 		references: {
@@ -18,15 +18,21 @@ const DoctorProfile = sequelize.define("DoctorProfile", {
 		onDelete: "CASCADE",
 		allowNull: false,
 	},
-	specialization: {
+	specialty: {
 		type: DataTypes.STRING(100), // nvarchar trong sql server
-		allowNull: false,
+		collate: "SQL_Latin1_General_CP1_CI_AS",
 	},
-	experience: {
+	department: {
+		type: DataTypes.STRING(100),
+		collate: "SQL_Latin1_General_CP1_CI_AS",
+	},
+	yearsOfExperience: {
 		type: DataTypes.INTEGER,
-		allowNull: true,
-		defaultValue: null,
+	},
+	education: {
+		type: DataTypes.STRING(100),
+		collate: "SQL_Latin1_General_CP1_CI_AS",
 	},
 });
 
-module.exports = DoctorProfile;
+module.exports = ProfileStaff;

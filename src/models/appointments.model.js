@@ -1,7 +1,7 @@
 const { DataTypes } = require("sequelize");
 const { sequelize } = require("../database/sequelize");
 const PatientProfile = require("./patientProfile.model");
-const DoctorProfile = require("./doctorProfile.model");
+const ProfileStaff = require("./profileStaff.model");
 
 const Appointments = sequelize.define(
 	"Appointments",
@@ -18,11 +18,11 @@ const Appointments = sequelize.define(
 				key: "patientId",
 			},
 		},
-		doctorId: {
+		staffId: {
 			type: DataTypes.INTEGER,
 			references: {
-				model: DoctorProfile,
-				key: "doctorId",
+				model: ProfileStaff,
+				key: "staffId",
 			},
 		},
 		symptoms: {

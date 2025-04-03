@@ -1,6 +1,8 @@
 const { DataTypes } = require("sequelize");
 const { sequelize } = require("../database/sequelize");
 const Appointments = require("./appointments.model");
+const ProfileStaff = require("./profileStaff.model");
+const MedicalRecords = require("./medicalRecords.model");
 
 const ExaminationForm = sequelize.define(
 	"ExaminationForm",
@@ -28,11 +30,11 @@ const ExaminationForm = sequelize.define(
 			},
 			onDelete: "CASCADE",
 		},
-		doctorId: {
+		staffId: {
 			type: DataTypes.INTEGER,
 			references: {
-				model: DoctorProfile,
-				key: "doctorId",
+				model: ProfileStaff,
+				key: "staffId",
 			},
 		},
 		examinationDate: {
