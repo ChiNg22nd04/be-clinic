@@ -134,6 +134,40 @@ const forgetPassword = async (req, res) => {
 	}
 };
 
+// const resendOPT = async (req, res) => {
+// 	try {
+// 		const { email } = req.body;
+
+// 		const [user] = await sequelize.query(`SELECT * FROM [User] WHERE email = :email`, {
+// 			replacements: { email },
+// 			type: sequelize.QueryTypes.SELECT,
+// 		});
+
+// 		if (!user) return res.status(404).json({ message: "User not found" });
+// 		if (user.isVerified) return res.status(400).json({ message: "User already verified" });
+
+// 		// Tạo mã OTP mới
+// 		const newOTP = Math.floor(100000 + Math.random() * 900000);
+
+// 		// Cập nhật mã mới trong database
+// 		await sequelize.query(
+// 			`UPDATE [User] SET verification_code = :verification_code WHERE email = :email`,
+// 			{
+// 				replacements: { email, verification_code: newOTP },
+// 				type: sequelize.QueryTypes.UPDATE,
+// 			}
+// 		);
+
+// 		// Gửi email mã xác nhận mới
+// 		await sendVerificationEmail(email, `Your verification code: ${newOTP}`);
+
+// 		return res.status(200).json({ message: "Verification code resent" });
+// 	} catch (error) {
+// 		console.error("Resend OTP error:", error);
+// 		res.status(500).json({ error: "Server error", details: error.message });
+// 	}
+// };
+
 const resendOPT = async (req, res) => {
 	try {
 		const { email } = req.body;
@@ -144,30 +178,49 @@ const resendOPT = async (req, res) => {
 		});
 
 		if (!user) return res.status(404).json({ message: "User not found" });
-		if (user.isVerified) return res.status(400).json({ message: "User already verified" });
+		if (user.is_verified) return res.status(400).json({ message: "User already verified" });
 
-		// Tạo mã OTP mới
+		const now = new Date();
+		const lastSentAt = user.otp_last_sent_at ? new Date(user.otp_last_sent_at) : null;
+
+		// Kiểm tra nếu qua ngày thì reset count
+		if (!lastSentAt || now.toDateString() !== lastSentAt.toDateString()) {
+			user.otp_sent_count = 0;
+		}
+
+		if (user.otp_sent_count >= 5) {
+			return res.status(429).json({
+				message:
+					"You have reached the maximum number of OTP requests today. Please try again tomorrow.",
+			});
+		}
+
 		const newOTP = Math.floor(100000 + Math.random() * 900000);
 
-		// Cập nhật mã mới trong database
 		await sequelize.query(
-			`UPDATE [User] SET verification_code = :verification_code WHERE email = :email`,
+			`UPDATE [User] 
+			 SET verification_code = :verification_code,
+			     otp_sent_count = :otp_sent_count,
+			     otp_last_sent_at = :now
+			 WHERE email = :email`,
 			{
-				replacements: { email, verification_code: newOTP },
+				replacements: {
+					email,
+					verification_code: newOTP,
+					otp_sent_count: user.otp_sent_count + 1,
+					now,
+				},
 				type: sequelize.QueryTypes.UPDATE,
 			}
 		);
 
-		// Gửi email mã xác nhận mới
 		await sendVerificationEmail(email, `Your verification code: ${newOTP}`);
-
 		return res.status(200).json({ message: "Verification code resent" });
 	} catch (error) {
 		console.error("Resend OTP error:", error);
 		res.status(500).json({ error: "Server error", details: error.message });
 	}
 };
-
 
 module.exports = {
 	register,

@@ -59,6 +59,15 @@ const User = sequelize.define(
 			allowNull: true,
 			defaultValue: null,
 		},
+		otpSentCount: {
+			type: DataTypes.INTEGER,
+			defaultValue: 0,
+		},
+		otpLastSentAt: {
+			type: DataTypes.DATE,
+			allowNull: true,
+			defaultValue: null,
+		},
 	},
 	{
 		tableName: "[User]", // Chỉ định rõ tên bảng
