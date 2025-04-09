@@ -51,7 +51,18 @@ const getAllPatient = async (req, res) => {
 
 const createStaff = async (req, res) => {
 	try {
-		const { email, password, full_name, phone, role, username } = req.body;
+		const {
+			email,
+			password,
+			full_name,
+			phone,
+			role,
+			username,
+			specialty,
+			department,
+			yearsOfExperience,
+			education,
+		} = req.body;
 		console.log(req.body);
 
 		const hashPassword = await bcrypt.hash(password, 10);
@@ -77,6 +88,21 @@ const createStaff = async (req, res) => {
 			replacements: { email: email },
 			type: sequelize.QueryTypes.SELECT,
 		});
+
+		await sequelize.query(
+			`INSERT INTO [ProfileStaff] (staff_id,specialty,department,years_of_experience,education) 
+             VALUES (:staffId,:specialty,:department,:yearsOfExperience,:education);`,
+			{
+				replacements: {
+					staffId: data.id,
+					specialty,
+					department,
+					yearsOfExperience,
+					education,
+				},
+				type: sequelize.QueryTypes.INSERT,
+			}
+		);
 
 		const roleData = data.role;
 		console.log(roleData);
