@@ -58,12 +58,23 @@ const createStaff = async (req, res) => {
 			phone,
 			role,
 			username,
-			specialty,
+			specialtyId,
 			department,
 			yearsOfExperience,
 			education,
 		} = req.body;
 		console.log(req.body);
+
+		const [isSpecialtyId] = await sequelize.query(
+			`SELECT * FROM [Specialty] WHERE specialtyId = :specialtyId`,
+			{
+				replacements: {
+					specialtyId,
+				},
+				type: sequelize.QueryTypes.SELECT,
+			}
+		);
+		console.log(isSpecialtyId);
 
 		const hashPassword = await bcrypt.hash(password, 10);
 
@@ -90,12 +101,12 @@ const createStaff = async (req, res) => {
 		});
 
 		await sequelize.query(
-			`INSERT INTO [ProfileStaff] (staff_id,specialty,department,years_of_experience,education) 
-             VALUES (:staffId,:specialty,:department,:yearsOfExperience,:education);`,
+			`INSERT INTO [ProfileStaff] (staff_id,specialtyId,department,years_of_experience,education) 
+             VALUES (:staffId,:specialtyId,:department,:yearsOfExperience,:education);`,
 			{
 				replacements: {
 					staffId: data.id,
-					specialty,
+					specialtyId: isSpecialtyId,
 					department,
 					yearsOfExperience,
 					education,

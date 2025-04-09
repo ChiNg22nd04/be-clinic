@@ -1,6 +1,7 @@
 const { DataTypes } = require("sequelize");
 const { sequelize } = require("../database/sequelize");
 const User = require("./user.model");
+const Specialty = require("./specialty.model");
 
 const ProfileStaff = sequelize.define("ProfileStaff", {
 	id: {
@@ -18,9 +19,13 @@ const ProfileStaff = sequelize.define("ProfileStaff", {
 		onDelete: "CASCADE",
 		allowNull: false,
 	},
-	specialty: {
-		type: DataTypes.STRING(100), // nvarchar trong sql server
-		collate: "SQL_Latin1_General_CP1_CI_AS",
+	specialtyId: {
+		type: DataTypes.INTEGER, // nvarchar trong sql server
+		references: {
+			model: Specialty,
+			key: "specialtyId",
+		},
+		onDelete: "CASCADE",
 	},
 	department: {
 		type: DataTypes.STRING(100),

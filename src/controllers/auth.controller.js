@@ -45,7 +45,7 @@ const register = async (req, res) => {
 
 const login = async (req, res) => {
 	try {
-		const { email, password, verificationCode } = req.body;
+		const { email, password } = req.body;
 
 		const [user] = await sequelize.query(`SELECT * FROM [User] WHERE email = :email`, {
 			replacements: { email },
@@ -53,16 +53,28 @@ const login = async (req, res) => {
 		});
 
 		if (!user) return res.status(404).json({ message: "User not found." });
-		if (!user.is_verified) {
-			await sendVerificationEmail(email, `Your verification code: ${verificationCode}`);
-			return res.status(403).json({ message: "Please verify your email before login." });
+
+		const passwordIsValid = bcrypt.compareSync(password, user.password);
+		if (!passwordIsValid) {
+			return res.status(401).json({ message: "Password is incorrect" });
 		}
 
-		await sequelize.query(
-			//verification_code = NULL
-			`UPDATE [User] SET is_verified = 1 WHERE email = :email`,
-			{ replacements: { email }, type: sequelize.QueryTypes.UPDATE }
-		);
+		if (!user.is_verified) {
+			// Tạo mã xác minh mới (nếu cần) và gửi lại email
+			await sequelize.query(
+				`UPDATE [User] SET verification_code = :code WHERE email = :email`,
+				{
+					replacements: { code: verificationCode, email },
+					type: sequelize.QueryTypes.UPDATE,
+				}
+			);
+			await sendVerificationEmail(email, `Your verification code: ${verificationCode}`);
+			return res.status(403).json({
+				message: "Email not verified. Please verify with the OTP sent to your email.",
+				requireVerification: true,
+			});
+		}
+
 		if (!user.is_active) {
 			await sendAccountDisabledEmail(
 				email,
@@ -71,22 +83,17 @@ const login = async (req, res) => {
 			return res.status(403).json({ message: "Your account has been disabled!" });
 		}
 
-		const passwordIsValid = bcrypt.compareSync(password, user.password);
-		if (!passwordIsValid) {
-			return res.status(401).json({ message: "Password is incorrect" });
-		}
-
 		const token = jwt.sign(
-			{ id: user.id, email: user.email, role: user.role },
+			{ id: user.id, email: user.email, role: user.role, fullName: user.full_name },
 			process.env.SECRET_KEY,
 			{ expiresIn: "1h" }
 		);
 
-		await sendAccountActivatedEmail(email);
 		return res.status(200).json({
 			message: "Login success",
 			user: {
 				id: user.id,
+				fullName: user.full_name,
 				email: user.email,
 				role: user.role,
 				isActive: user.is_active,
@@ -222,9 +229,39 @@ const resendOPT = async (req, res) => {
 	}
 };
 
+const verifyOTP = async (req, res) => {
+	try {
+		const { email, verificationCode } = req.body;
+
+		const [user] = await sequelize.query(`SELECT * FROM [User] WHERE email = :email`, {
+			replacements: { email },
+			type: sequelize.QueryTypes.SELECT,
+		});
+
+		if (!user) return res.status(404).json({ message: "User not found" });
+		if (user.is_verified) return res.status(400).json({ message: "User already verified" });
+
+		if (user.verification_code !== Number(verificationCode)) {
+			return res.status(400).json({ message: "Invalid verification code" });
+		}
+
+		await sequelize.query(
+			`UPDATE [User] SET is_verified = 1, verification_code = NULL WHERE email = :email`,
+			{ replacements: { email }, type: sequelize.QueryTypes.UPDATE }
+		);
+
+		await sendAccountActivatedEmail(email);
+		return res.status(200).json({ message: "Verification successful. Please login again." });
+	} catch (error) {
+		console.error("Verification error:", error);
+		res.status(500).json({ error: "Server error", details: error.message });
+	}
+};
+
 module.exports = {
 	register,
 	login,
 	forgetPassword,
 	resendOPT,
+	verifyOTP,
 };

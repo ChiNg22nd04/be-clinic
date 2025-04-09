@@ -2,6 +2,7 @@ const { DataTypes } = require("sequelize");
 const { sequelize } = require("../database/sequelize");
 const PatientProfile = require("./patientProfile.model");
 const ProfileStaff = require("./profileStaff.model");
+const ClinicSpecialty = require("./clinicSpecialty.model");
 
 const Appointments = sequelize.define(
 	"Appointments",
@@ -40,6 +41,20 @@ const Appointments = sequelize.define(
 				isIn: [[0, 1, 2]], //0: Pending, 1: Confirmed, 2: Completed
 			},
 			defaultValue: 0,
+		},
+		clinicId: {
+			type: DataTypes.INTEGER,
+			references: {
+				model: ClinicSpecialty,
+				key: "clinicId",
+			},
+		},
+		specialtyId: {
+			type: DataTypes.INTEGER,
+			references: {
+				model: ClinicSpecialty,
+				key: "specialtyId",
+			},
 		},
 	},
 	{
