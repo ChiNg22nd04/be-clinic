@@ -20,7 +20,7 @@ const Clinic = sequelize.define(
 			collate: "SQL_Latin1_General_CP1_CI_AS",
 		},
 		phoneNumber: {
-			type: DataTypes.STRING(15),
+			type: DataTypes.TEXT,
 			allowNull: true,
 			defaultValue: null,
 		},
