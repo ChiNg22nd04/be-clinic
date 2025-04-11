@@ -45,7 +45,17 @@ const getAllSpecialtiesDoctor = async (req, res) => {
 	try {
 		const { specialtyId, clinicId } = req.body;
 		const docList = await sequelize.query(
-			`SELECT * FROM [ProfileStaff] WHERE specialty_id = :specialty_id AND clinic_id = :clinic_id`,
+			`SELECT 
+				ps.staff_id, 
+				u.full_name, 
+				ps.specialty_id, 
+				ps.clinic_id, 
+				ps.department, 
+				ps.years_of_experience, 
+				ps.education
+			FROM [ProfileStaff] ps
+			JOIN [User] u ON u.id = ps.staff_id
+			WHERE specialty_id = :specialty_id AND clinic_id = :clinic_id`,
 			{
 				replacements: { specialty_id: specialtyId, clinic_id: clinicId },
 				type: sequelize.QueryTypes.SELECT,
