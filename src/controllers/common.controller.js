@@ -97,7 +97,8 @@ const getAllShiftDoctor = async (req, res) => {
 				ps.specialty_id,
 				ss.shift_id,
 				ss.work_date,
-				s.shift_name
+				s.shift_name,
+				ss.status
 			FROM [StaffShifts] ss
 			JOIN [ProfileStaff] ps ON ss.staff_id = ps.staff_id
 			JOIN [Shifts] s ON ss.shift_id = s.id
