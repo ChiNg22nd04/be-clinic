@@ -15,10 +15,10 @@ const Articles = sequelize.define(
 			collate: "SQL_Latin1_General_CP1_CI_AS",
 		},
 		content: {
-			type: DataTypes.STRING(255),
+			type: DataTypes.TEXT,
+			collate: "SQL_Latin1_General_CP1_CI_AS",
 			allowNull: true,
 			defaultValue: null,
-			collate: "SQL_Latin1_General_CP1_CI_AS",
 		},
 		author: {
 			type: DataTypes.STRING(100),

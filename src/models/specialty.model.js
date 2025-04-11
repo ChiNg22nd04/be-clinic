@@ -9,21 +9,21 @@ const Specialty = sequelize.define(
 			autoIncrement: true,
 		},
 		specialtyName: {
-			type: DataTypes.STRING(255),
-			allowNull: false,
+			type: DataTypes.TEXT,
 			collate: "SQL_Latin1_General_CP1_CI_AS",
+			allowNull: false,
 		},
 		introduce: {
-			type: DataTypes.STRING(255),
+			type: DataTypes.TEXT,
+			collate: "SQL_Latin1_General_CP1_CI_AS",
 			allowNull: true,
 			defaultValue: null,
-			collate: "SQL_Latin1_General_CP1_CI_AS",
 		},
 		services: {
-			type: DataTypes.STRING(255),
+			type: DataTypes.TEXT,
+			collate: "SQL_Latin1_General_CP1_CI_AS",
 			allowNull: true,
 			defaultValue: null,
-			collate: "SQL_Latin1_General_CP1_CI_AS",
 		},
 	},
 	{

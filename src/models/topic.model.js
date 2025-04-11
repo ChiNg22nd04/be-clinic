@@ -9,10 +9,10 @@ const Topic = sequelize.define(
 			autoIncrement: true,
 		},
 		topicName: {
-			type: DataTypes.STRING(100),
+			type: DataTypes.TEXT,
+			collate: "SQL_Latin1_General_CP1_CI_AS",
 			allowNull: true,
 			defaultValue: null,
-			collate: "SQL_Latin1_General_CP1_CI_AS",
 		},
 	},
 	{
