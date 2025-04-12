@@ -9,7 +9,7 @@ const userRoutes = require("./user.routes");
 const commonRoutes = require("./common.routes");
 
 router.use("/", authRoutes);
-router.use("/page", commonRoutes);
+router.use("/", commonRoutes);
 router.use("/user", userRoutes);
 router.use("/receptionist", receptionistRoutes);
 router.use("/admin", adminRoutes);

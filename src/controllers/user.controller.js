@@ -37,9 +37,10 @@ const createPatientProfile = async (patientId) => {
 
 const scheduleAppointment = async (req, res) => {
 	try {
-		const { doctorId, appointmentDate, symptoms } = req.body;
+		const { patientId, staffId, appointmentDate, symptoms, clinicId, specialtyId, shiftId } =
+			req.body;
 		console.log(req.body);
-		if (!doctorId || !appointmentDate)
+		if (!staffId || !appointmentDate)
 			return res.status(400).json({ message: "Please fill in the required fields" });
 
 		// Kiểm tra định dạng ngày
@@ -49,14 +50,14 @@ const scheduleAppointment = async (req, res) => {
 		}
 		const formattedDate = formattedDateString.format("YYYY-MM-DD HH:mm:ss");
 
-		const patientId = req.user.id;
-		console.log("patientId", patientId);
+		// const patientId = req.user.id;
+		// console.log("patientId", patientId);
 		await createPatientProfile(patientId);
 
 		const [doctor] = await sequelize.query(
-			`SELECT * FROM [DoctorProfile] WHERE doctor_id = :doctorId`,
+			`SELECT * FROM [ProfileStaff] WHERE staff_id = :staff_id`,
 			{
-				replacements: { doctorId },
+				replacements: { staff_id: staffId },
 				type: sequelize.QueryTypes.SELECT,
 			}
 		);
@@ -64,15 +65,18 @@ const scheduleAppointment = async (req, res) => {
 		if (!doctor) return res.status(404).json({ message: "Doctor not found." });
 
 		await sequelize.query(
-			`INSERT INTO [Appointments] (patient_id, doctor_id, symptoms, appointment_date, status)
-		VALUES (:patientId, :doctorId, :symptoms, :appointmentDate, :status);`,
+			`INSERT INTO [Appointments] (patient_id, staff_id, symptoms, appointment_date, status, clinic_id, specialty_id, shift_id)
+		VALUES (:patient_id, :staffId, :symptoms, :appointmentDate, :status, :clinic_id, :specialty_id, :shift_id);`,
 			{
 				replacements: {
-					patientId: patientId,
-					doctorId: doctor.doctor_id,
+					patient_id: patientId,
+					staffId: doctor.staff_id,
 					symptoms: symptoms || null,
 					appointmentDate: formattedDate,
 					status: 0,
+					clinic_id: clinicId,
+					specialty_id: specialtyId,
+					shift_id: shiftId,
 				},
 				type: sequelize.QueryTypes.INSERT,
 			}
@@ -82,10 +86,13 @@ const scheduleAppointment = async (req, res) => {
 			message: "Appointment successful",
 			appointment: {
 				patientId,
-				doctorId: doctor.doctor_id,
+				staffId: doctor.staff_id,
 				symptoms,
 				appointmentDate: formattedDate,
 				status: 0,
+				clinicId,
+				specialtyId,
+				shiftId,
 			},
 		});
 	} catch (err) {
