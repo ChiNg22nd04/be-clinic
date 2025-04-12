@@ -14,10 +14,6 @@ const catchError = (err, res) => {
 // Middleware xác thực token
 const verifyToken = (req, res, next) => {
 	const authHeader = req.header("Authorization");
-	console.log(req.header);
-	console.log("📌 Header Authorization nhận được:", authHeader);
-
-	// Kiểm tra header có tồn tại không
 	if (!authHeader) {
 		console.log("❌ Không có token!");
 		return res.status(403).send({ message: "No token provided!" });
@@ -31,8 +27,6 @@ const verifyToken = (req, res, next) => {
 
 	// Tách token từ chuỗi "Bearer <token>"
 	const token = authHeader.replace("Bearer ", "").trim();
-	console.log("🔍 Token sau khi tách:", token);
-
 	jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
 		if (err) {
 			console.log("❌ JWT verify error:", err);
@@ -55,7 +49,6 @@ const authorizeRole = (...allowedRoles) => {
 		}
 
 		console.log("🔍 Checking user role:", req.user.role);
-
 		if (!allowedRoles.includes(req.user.role)) {
 			console.log("❌ Forbidden: User does not have permission");
 			return res

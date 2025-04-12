@@ -3,6 +3,7 @@ const { sequelize } = require("../database/sequelize");
 const PatientProfile = require("./patientProfile.model");
 const ProfileStaff = require("./profileStaff.model");
 const ClinicSpecialty = require("./clinicSpecialty.model");
+const Shifts = require("./shifts.model");
 
 const Appointments = sequelize.define(
 	"Appointments",
@@ -30,6 +31,7 @@ const Appointments = sequelize.define(
 			type: DataTypes.STRING(100),
 			allowNull: true,
 			defaultValue: null,
+			collate: "SQL_Latin1_General_CP1_CI_AS",
 		},
 		appointmentDate: {
 			type: DataTypes.DATE,
@@ -54,6 +56,13 @@ const Appointments = sequelize.define(
 			references: {
 				model: ClinicSpecialty,
 				key: "specialtyId",
+			},
+		},
+		shiftId: {
+			type: DataTypes.INTEGER,
+			references: {
+				model: Shifts,
+				key: "id",
 			},
 		},
 	},
