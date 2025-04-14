@@ -9,9 +9,33 @@ const getAppointment = async (req, res) => {
 			type: sequelize.QueryTypes.SELECT,
 		});
 		console.log(appointment);
+		const data = await sequelize.query(
+			`SELECT 
+				a.id,
+				a.patient_id,
+				p.full_name AS patient_name,  
+				a.staff_id,
+				s.full_name AS staff_name,   
+				a.specialty_id,
+				sp.specialty_name,
+				a.symptoms,
+				a.appointment_date,
+				a.clinic_id,
+				c.clinic_name,
+				a.status
+			FROM [Appointments] a
+			JOIN [User] s ON a.staff_id = s.id          
+			JOIN [User] p ON a.patient_id = p.id        
+			JOIN [Specialty] sp ON a.specialty_id = sp.specialty_id
+			JOIN [Clinics] c ON a.clinic_id = c.clinic_id
+			ORDER BY a.appointment_date DESC;`,
+			{
+				type: sequelize.QueryTypes.SELECT,
+			}
+		);
 		res.status(201).json({
 			message: "Appointments fetched successfully",
-			data: appointment,
+			data: data,
 		});
 	} catch (err) {
 		console.error("Error in making appointment:", err);
