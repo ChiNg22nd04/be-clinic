@@ -4,6 +4,7 @@ const PatientProfile = require("./patientProfile.model");
 const ProfileStaff = require("./profileStaff.model");
 const ClinicSpecialty = require("./clinicSpecialty.model");
 const Shifts = require("./shifts.model");
+const StaffShifts = require("./staffShifts");
 
 const Appointments = sequelize.define(
 	"Appointments",
@@ -58,10 +59,10 @@ const Appointments = sequelize.define(
 				key: "specialtyId",
 			},
 		},
-		shiftId: {
+		staffShiftsId: {
 			type: DataTypes.INTEGER,
 			references: {
-				model: Shifts,
+				model: StaffShifts,
 				key: "id",
 			},
 		},

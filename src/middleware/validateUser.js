@@ -2,7 +2,7 @@ const validateUser = (mode = "register") => {
 	return async (req, res, next) => {
 		try {
 			const { email, password, fullName, username, phone, role } = req.body;
-
+			console.log(req.body);
 			const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 			if (!email || !emailRegex.test(email)) {
 				return res.status(400).json({ message: "Invalid email format." });
