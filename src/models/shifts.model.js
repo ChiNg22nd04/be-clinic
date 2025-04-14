@@ -18,9 +18,10 @@ const Shifts = sequelize.define(
 			allowNull: false,
 			get() {
 				const rawValue = this.getDataValue("startTime");
-				return rawValue ? rawValue.toString().substring(0, 5) : null; // VD: "13:00"
+				return rawValue ? rawValue.toString().substring(0, 5) : null; // VD: "17:00"
 			},
 		},
+
 		endTime: {
 			type: DataTypes.TIME,
 			allowNull: false,
