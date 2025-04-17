@@ -73,17 +73,33 @@ const updateStatusAppointment = async (req, res) => {
 			}
 		);
 
-		const [updatedAppointment] = await sequelize.query(
-			`SELECT * FROM [Appointments] WHERE id = :id`,
-			{
-				replacements: { id },
-				type: sequelize.QueryTypes.SELECT,
-			}
+		const [data] = await sequelize.query(
+			`SELECT 
+				a.id,
+				a.patient_id,
+				p.full_name AS patient_name,  
+				a.staff_id,
+				s.full_name AS staff_name,   
+				a.specialty_id,
+				sp.specialty_name,
+				a.symptoms,
+				a.appointment_date,
+				a.clinic_id,
+				c.clinic_name,
+				a.status
+			FROM [Appointments] a
+			JOIN [User] s ON a.staff_id = s.id          
+			JOIN [User] p ON a.patient_id = p.id        
+			JOIN [Specialty] sp ON a.specialty_id = sp.specialty_id
+			JOIN [Clinics] c ON a.clinic_id = c.clinic_id
+			WHERE a.id = :id
+			ORDER BY a.appointment_date DESC;`,
+			{ replacements: { id }, type: sequelize.QueryTypes.SELECT }
 		);
 
 		res.status(200).json({
 			message: "Appointment status updated successfully.",
-			data: updatedAppointment,
+			data: data,
 		});
 	} catch (err) {
 		console.error("Error updating appointment status:", err);
