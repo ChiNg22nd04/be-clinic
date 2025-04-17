@@ -3,47 +3,139 @@ const Appointments = require("../models/appointments.model");
 const { DATE, DataTypes } = require("sequelize");
 const moment = require("moment");
 
-const getListExaminationForm = async (req, res) => {
+const getAllExaminationForm = async (req, res) => {
 	try {
-		// Lấy ngày hiện tại theo định dạng YYYY-MM-DD
-		const currentDate = moment().format("YYYY-MM-DD");
-		const examinationForm = await sequelize.query(
-			`SELECT * FROM [ExaminationForm] WHERE CAST(examination_date AS DATE) = :examination_date`,
+		const data = await sequelize.query(
+			`SELECT 
+				e.id,
+				e.numerical,
+				e.medical_record_id,
+				e.id_appointment,
+				e.staff_id,
+				e.diagnosis,
+				e.note,
+				e.status,
+				m.patient_id,
+				p.full_name AS patient_name,  
+				e.staff_id,
+				s.full_name AS staff_name,   
+				a.specialty_id,
+				sp.specialty_name,
+				a.symptoms,
+				a.appointment_date,
+				e.examination_date,
+				a.clinic_id,
+				c.clinic_name,
+				e.status
+			FROM [ExaminationForm] e
+			JOIN [User] s ON e.staff_id = s.id          
+			JOIN [MedicalRecords] m ON e.medical_record_id = m.id       
+			JOIN [User] p ON p.id = m.patient_id       
+			JOIN [Appointments] a ON a.id = e.id_appointment       
+			JOIN [Specialty] sp ON a.specialty_id = sp.specialty_id
+			JOIN [Clinics] c ON a.clinic_id = c.clinic_id
+			ORDER BY a.appointment_date DESC;`,
 			{
-				replacements: { examination_date: currentDate },
 				type: sequelize.QueryTypes.SELECT,
 			}
 		);
-
-		console.log(examinationForm);
-		res.status(200).json({
-			message: "ExaminationForm fetched successfully",
-			data: examinationForm,
+		console.log(data);
+		res.status(201).json({
+			message: "Appointments fetched successfully",
+			data: data,
 		});
 	} catch (err) {
-		console.error("Error in making examinationForm:", err);
+		console.error("Error in making appointment:", err);
 		res.status(500).json({ message: "Server error, please try again later." });
 	}
+	// try {
+	// 	// Lấy ngày hiện tại theo định dạng YYYY-MM-DD
+	// 	const currentDate = moment().format("YYYY-MM-DD");
+	// 	const examinationForm = await sequelize.query(
+	// 		`SELECT * FROM [ExaminationForm] WHERE CAST(examination_date AS DATE) = :examination_date`,
+	// 		{
+	// 			replacements: { examination_date: currentDate },
+	// 			type: sequelize.QueryTypes.SELECT,
+	// 		}
+	// 	);
+
+	// 	console.log(examinationForm);
+	// 	res.status(200).json({
+	// 		message: "ExaminationForm fetched successfully",
+	// 		data: examinationForm,
+	// 	});
+	// } catch (err) {
+	// 	console.error("Error in making examinationForm:", err);
+	// 	res.status(500).json({ message: "Server error, please try again later." });
+	// }
 };
 
 const getExaminationForm = async (req, res) => {
 	try {
 		const { id } = req.body;
-		console.log(id);
-		const [detail] = await sequelize.query(`SELECT * FROM [ExaminationForm] WHERE id = :id`, {
-			replacements: { id },
-			type: sequelize.QueryTypes.SELECT,
-		});
 
-		console.log(detail);
-		res.status(200).json({
-			message: "Detail examinationForm fetched successfully",
-			data: detail,
+		const [data] = await sequelize.query(
+			`SELECT 
+				e.id,
+				e.numerical,
+				e.medical_record_id,
+				e.id_appointment,
+				e.staff_id,
+				e.diagnosis,
+				e.note,
+				e.status,
+				m.patient_id,
+				p.full_name AS patient_name,  
+				e.staff_id,
+				s.full_name AS staff_name,   
+				a.specialty_id,
+				sp.specialty_name,
+				a.symptoms,
+				a.appointment_date,
+				e.examination_date,
+				a.clinic_id,
+				c.clinic_name,
+				e.status
+			FROM [ExaminationForm] e
+			JOIN [User] s ON e.staff_id = s.id          
+			JOIN [MedicalRecords] m ON e.medical_record_id = m.id       
+			JOIN [User] p ON p.id = m.patient_id       
+			JOIN [Appointments] a ON a.id = e.id_appointment       
+			JOIN [Specialty] sp ON a.specialty_id = sp.specialty_id
+			JOIN [Clinics] c ON a.clinic_id = c.clinic_id
+			WHERE e.id = :id`,
+			{
+				replacements: { id },
+				type: sequelize.QueryTypes.SELECT,
+			}
+		);
+		console.log(data);
+		res.status(201).json({
+			message: "Appointments fetched successfully",
+			data: data,
 		});
 	} catch (err) {
-		console.error("Error in making detail examinationForm:", err);
+		console.error("Error in making appointment:", err);
 		res.status(500).json({ message: "Server error, please try again later." });
 	}
+
+	// try {
+	// 	const { id } = req.body;
+	// 	console.log(id);
+	// 	const [detail] = await sequelize.query(`SELECT * FROM [ExaminationForm] WHERE id = :id`, {
+	// 		replacements: { id },
+	// 		type: sequelize.QueryTypes.SELECT,
+	// 	});
+
+	// 	console.log(detail);
+	// 	res.status(200).json({
+	// 		message: "Detail examinationForm fetched successfully",
+	// 		data: detail,
+	// 	});
+	// } catch (err) {
+	// 	console.error("Error in making detail examinationForm:", err);
+	// 	res.status(500).json({ message: "Server error, please try again later." });
+	// }
 };
 
 const updateExaminationForm = async (req, res) => {
@@ -106,9 +198,44 @@ const updatePrescription = async (req, res) => {
 	}
 };
 
+const getPrescription = async (req, res) => {
+	try {
+		const { examinationFormId } = req.body;
+		const id = parseInt(examinationFormId);
+		const data = await sequelize.query(
+			`SELECT 
+			m.id AS medicine_id,
+			m.name AS medicine_name,
+			m.price,
+			m.description,
+			p.quantity,
+			p.usage
+		FROM 
+			Prescription p
+		JOIN 
+			Medicine m ON p.medicine_id = m.id
+		WHERE 
+			p.examination_form_id = :examination_form_id;`,
+			{
+				replacements: { examination_form_id: examinationFormId },
+				type: sequelize.QueryTypes.SELECT,
+			}
+		);
+		console.log("data", data);
+		res.status(200).json({
+			message: "Detail examinationForm successfully",
+			data: data,
+		});
+	} catch (err) {
+		console.error("Error in making update examinationForm:", err);
+		res.status(500).json({ message: "Server error, please try again later." });
+	}
+};
+
 module.exports = {
-	getListExaminationForm,
+	getAllExaminationForm,
 	getExaminationForm,
 	updateExaminationForm,
 	updatePrescription,
+	getPrescription,
 };
