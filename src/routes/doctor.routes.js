@@ -6,6 +6,7 @@ const {
 	updateExaminationForm,
 	updatePrescription,
 	getPrescription,
+	getMedicine,
 } = require("../controllers/doctor.controller");
 
 const router = express.Router();
@@ -16,6 +17,7 @@ router.put("/medical-examination/update", verifyToken, authorizeRole(1), updateE
 
 router.post("/prescription/update-form", verifyToken, authorizeRole(1), updatePrescription);
 router.post("/prescription/form", verifyToken, authorizeRole(1), getPrescription);
+router.get("/medicine/get-all", verifyToken, authorizeRole(1), getMedicine);
 
 router.get("/test", (req, res) => {
 	console.log("✅ Test API called!");

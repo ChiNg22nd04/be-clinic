@@ -155,4 +155,72 @@ const getAllExamination = async (req, res) => {
 	}
 };
 
-module.exports = { getAppointment, updateStatusAppointment, getAllExamination };
+const createInvoice = async (req, res) => {
+	try {
+		const { examinationFormId } = req.body;
+		const data = await sequelize.query(
+			`INSERT INTO [Invoice] (examination_form_id)
+			VALUES (:examinationFormId)
+			`,
+			{
+				replacements: { examinationFormId },
+				type: sequelize.QueryTypes.INSERT,
+			}
+		);
+		await sequelize.query(
+			`UPDATE ExaminationForm
+			SET status = 2
+			WHERE id = :examinationFormId;`,
+			{
+				replacements: { examinationFormId },
+				type: sequelize.QueryTypes.UPDATE,
+			}
+		);
+		console.log(data);
+		const [total] = await sequelize.query(
+			`UPDATE Invoice
+			SET total_amount = (
+				SELECT SUM(m.price * p.quantity)
+				FROM Prescription p
+				JOIN Medicine m ON p.medicine_id = m.id
+				WHERE p.examination_form_id = Invoice.examination_form_id
+			)
+			WHERE examination_form_id = :examinationFormId;`,
+			{
+				replacements: { examinationFormId },
+				type: sequelize.QueryTypes.UPDATE,
+			}
+		);
+		console.log(total);
+		res.status(201).json({
+			message: "Invoice fetched successfully",
+			data: total,
+		});
+	} catch (err) {
+		console.error("Error in making invoice:", err);
+		res.status(500).json({ message: "Server error, please try again later." });
+	}
+};
+const getAllInvoice = async (req, res) => {
+	try {
+		const data = await sequelize.query(`SELECT * FROM [Invoice]`, {
+			type: sequelize.QueryTypes.SELECT,
+		});
+		console.log(data);
+
+		res.status(201).json({
+			message: "Invoice fetched successfully",
+			data: data,
+		});
+	} catch (err) {
+		console.error("Error in making invoice:", err);
+		res.status(500).json({ message: "Server error, please try again later." });
+	}
+};
+module.exports = {
+	getAppointment,
+	updateStatusAppointment,
+	getAllExamination,
+	createInvoice,
+	getAllInvoice,
+};

@@ -232,10 +232,31 @@ const getPrescription = async (req, res) => {
 	}
 };
 
+const getMedicine = async (req, res) => {
+	try {
+		const data = await sequelize.query(
+			`SELECT id, name, description, price
+			FROM Medicine`,
+			{
+				type: sequelize.QueryTypes.SELECT,
+			}
+		);
+		console.log("data", data);
+		res.status(200).json({
+			message: "Detail examinationForm successfully",
+			data: data,
+		});
+	} catch (err) {
+		console.error("Error in making update examinationForm:", err);
+		res.status(500).json({ message: "Server error, please try again later." });
+	}
+};
+
 module.exports = {
 	getAllExaminationForm,
 	getExaminationForm,
 	updateExaminationForm,
 	updatePrescription,
 	getPrescription,
+	getMedicine,
 };
