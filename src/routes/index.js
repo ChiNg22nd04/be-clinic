@@ -7,6 +7,7 @@ const doctorRoutes = require("./doctor.routes");
 const adminRoutes = require("./admin.routes");
 const userRoutes = require("./user.routes");
 const commonRoutes = require("./common.routes");
+const vnpayRoutes = require("./vnpay.routes");
 
 router.use("/", authRoutes);
 router.use("/", commonRoutes);
@@ -14,6 +15,7 @@ router.use("/user", userRoutes);
 router.use("/receptionist", receptionistRoutes);
 router.use("/admin", adminRoutes);
 router.use("/doctor", doctorRoutes);
+router.use("/vnpay", vnpayRoutes);
 
 console.log("✅ Routes initialized");
 module.exports = router;

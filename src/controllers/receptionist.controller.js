@@ -203,9 +203,27 @@ const createInvoice = async (req, res) => {
 };
 const getAllInvoice = async (req, res) => {
 	try {
-		const data = await sequelize.query(`SELECT * FROM [Invoice]`, {
-			type: sequelize.QueryTypes.SELECT,
-		});
+		const data = await sequelize.query(
+			`SELECT 
+			i.id,
+			i.total_amount,
+			i.payment_status,
+			i.payment_method,
+			i.created_at,
+			
+			ef.id AS examination_form_id,
+			u.full_name AS patient_name,
+			u.id AS patient_id
+		
+		FROM Invoice i
+		JOIN ExaminationForm ef ON i.examination_form_id = ef.id
+		JOIN MedicalRecords mr ON ef.medical_record_id = mr.id
+		JOIN PatientProfile pp ON mr.patient_id = pp.patient_id
+		JOIN [User] u ON pp.patient_id = u.id;`,
+			{
+				type: sequelize.QueryTypes.SELECT,
+			}
+		);
 		console.log(data);
 
 		res.status(201).json({
