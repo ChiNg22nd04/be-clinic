@@ -201,11 +201,29 @@ const createInvoice = async (req, res) => {
 		res.status(500).json({ message: "Server error, please try again later." });
 	}
 };
+
 const getAllInvoice = async (req, res) => {
 	try {
-		const data = await sequelize.query(`SELECT * FROM [Invoice]`, {
-			type: sequelize.QueryTypes.SELECT,
-		});
+		const data = await sequelize.query(
+			`SELECT 
+				i.id ,
+				i.total_amount,
+				i.payment_status,
+				i.payment_method,
+				i.created_at,
+
+				ef.id AS examination_form_id,
+				u.full_name AS patient_name,
+				u.id AS patient_id
+			FROM Invoice i
+			JOIN ExaminationForm ef ON i.examination_form_id = ef.id
+			JOIN MedicalRecords mr ON ef.medical_record_id = mr.id
+			JOIN PatientProfile pp ON mr.patient_id = pp.patient_id
+			JOIN [User] u ON pp.patient_id = u.id;`,
+			{
+				type: sequelize.QueryTypes.SELECT,
+			}
+		);
 		console.log(data);
 
 		res.status(201).json({
@@ -217,10 +235,45 @@ const getAllInvoice = async (req, res) => {
 		res.status(500).json({ message: "Server error, please try again later." });
 	}
 };
+
+const getShift = async (req, res) => {
+	try {
+		const { staffId } = req.body;
+		console.log(staffId);
+		const data = await sequelize.query(
+			`SELECT 
+				ss.id AS staff_shifts_id,
+				s.shift_name,
+				s.id AS shift_id,
+				s.start_time,
+				s.end_time,
+				ss.work_date,
+				ss.status
+			FROM StaffShifts ss
+			JOIN Shifts s ON ss.shift_id = s.id
+			WHERE ss.staff_id = :staff_id
+			ORDER BY ss.work_date, s.start_time;`,
+			{
+				replacements: { staff_id: staffId },
+				type: sequelize.QueryTypes.SELECT,
+			}
+		);
+		console.log(data);
+
+		res.status(201).json({
+			message: "Shifts staff fetched successfully",
+			data: data,
+		});
+	} catch (err) {
+		console.error("Error in making shifts:", err);
+		res.status(500).json({ message: "Server error, please try again later." });
+	}
+};
 module.exports = {
 	getAppointment,
 	updateStatusAppointment,
 	getAllExamination,
 	createInvoice,
 	getAllInvoice,
+	getShift,
 };
