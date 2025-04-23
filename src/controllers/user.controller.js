@@ -1,6 +1,8 @@
 const { sequelize } = require("../database/sequelize");
 const Appointments = require("../models/appointments.model");
 const { DATE, DataTypes } = require("sequelize");
+const User = require("../models/user.model");
+const cloudinary = require("../config/cloudinaryConfig");
 const moment = require("moment");
 
 const createPatientProfile = async (patientId) => {
@@ -149,4 +151,233 @@ const getAllAppointment = async (req, res) => {
 	}
 };
 
-module.exports = { scheduleAppointment, getAllAppointment };
+const getProfile = async (req, res) => {
+	try {
+		const { id } = req.body;
+		console.log(id);
+		// Kiểm tra xem có file không
+		const [profile] = await sequelize.query(`SELECT * FROM [User] WHERE id = :id`, {
+			replacements: { id },
+			type: sequelize.QueryTypes.SELECT,
+		});
+		console.log(profile);
+		res.status(200).json({
+			message: "Fetch profile user successfully.",
+			data: profile,
+		});
+	} catch (err) {
+		console.error("Error fetching profile user:", err);
+		res.status(500).json({ message: "Server error, please try again later." });
+	}
+};
+
+// const updateUserProfile = async (req, res) => {
+// 	try {
+// 		const userId = req.user.id;
+// 		const { email, full_name, role, username } = req.body;
+// 		let imageUrl = undefined;
+
+// 		// Nếu có ảnh, upload lên Cloudinary
+// 		if (req.file) {
+// 			const result = await cloudinary.uploader.upload(req.file.path, {
+// 				folder: "user_avatars",
+// 				use_filename: true,
+// 				unique_filename: false,
+// 			});
+// 			imageUrl = result.secure_url;
+// 		}
+
+// 		// Lấy dữ liệu người dùng hiện tại bằng raw SQL
+// 		const [users] = await sequelize.query(`SELECT * FROM [Users] WHERE id = :userId`, {
+// 			replacements: { userId },
+// 			type: sequelize.QueryTypes.SELECT,
+// 		});
+
+// 		if (!users) {
+// 			return res.status(404).json({ message: "User not found." });
+// 		}
+
+// 		const currentUser = users; // vì query trả về 1 object chứ không phải array
+
+// 		// Cập nhật thông tin người dùng
+// 		await sequelize.query(
+// 			`UPDATE [Users]
+// 			 SET email = :email,
+// 			     full_name = :full_name,
+// 			     role = :role,
+// 			     username = :username,
+// 			     image = :image
+// 			 WHERE id = :userId`,
+// 			{
+// 				replacements: {
+// 					email: email || currentUser.email,
+// 					full_name: full_name || currentUser.full_name,
+// 					role: role !== undefined ? role : currentUser.role,
+// 					username: username || currentUser.username,
+// 					image: imageUrl || currentUser.image,
+// 					userId,
+// 				},
+// 				type: sequelize.QueryTypes.UPDATE,
+// 			}
+// 		);
+
+// 		// Trả về thông tin mới sau khi cập nhật
+// 		const [updatedUsers] = await sequelize.query(`SELECT * FROM [Users] WHERE id = :userId`, {
+// 			replacements: { userId },
+// 			type: sequelize.QueryTypes.SELECT,
+// 		});
+
+// 		res.status(200).json({
+// 			message: "User profile updated successfully.",
+// 			user: updatedUsers,
+// 		});
+// 	} catch (err) {
+// 		console.error("Error updating user profile:", err);
+// 		res.status(500).json({ message: "Server error, please try again later." });
+// 	}
+// };
+
+const updateUserInfo = async (req, res) => {
+	try {
+		const userId = req.user.id;
+		const { email, full_name, role, username } = req.body;
+
+		// Lấy user hiện tại
+		const [user] = await sequelize.query(`SELECT * FROM [Users] WHERE id = :userId`, {
+			replacements: { userId },
+			type: sequelize.QueryTypes.SELECT,
+		});
+
+		if (!user) return res.status(404).json({ message: "User not found." });
+
+		// Cập nhật
+		await sequelize.query(
+			`UPDATE [Users]
+			 SET email = :email,
+			     full_name = :full_name,
+			     role = :role,
+			     username = :username
+			 WHERE id = :userId`,
+			{
+				replacements: {
+					email: email || user.email,
+					full_name: full_name || user.full_name,
+					role: role !== undefined ? role : user.role,
+					username: username || user.username,
+					userId,
+				},
+				type: sequelize.QueryTypes.UPDATE,
+			}
+		);
+
+		const [updatedUser] = await sequelize.query(`SELECT * FROM [Users] WHERE id = :userId`, {
+			replacements: { userId },
+			type: sequelize.QueryTypes.SELECT,
+		});
+
+		res.status(200).json({ message: "User info updated", user: updatedUser });
+	} catch (err) {
+		console.error("Error updating user info:", err);
+		res.status(500).json({ message: "Server error." });
+	}
+};
+
+// const updateUserAvatar = async (req, res) => {
+// 	try {
+// 		const userId = req.user.id;
+
+// 		if (!req.file) {
+// 			return res.status(400).json({ message: "No file uploaded." });
+// 		}
+// 		console.log(req.file.path);
+// 		const result = await cloudinary.uploader.upload(req.file.path, {
+// 			folder: "user_avatars",
+// 			use_filename: true,
+// 			unique_filename: false,
+// 		});
+
+// 		const imageUrl = result.secure_url;
+// 		console.log(imageUrl);
+// 		await sequelize.query(`UPDATE [User] SET image = :image WHERE id = :userId`, {
+// 			replacements: { image: imageUrl, userId },
+// 			type: sequelize.QueryTypes.UPDATE,
+// 		});
+
+// 		const [updatedUser] = await sequelize.query(`SELECT * FROM [User] WHERE id = :userId`, {
+// 			replacements: { userId },
+// 			type: sequelize.QueryTypes.SELECT,
+// 		});
+
+// 		res.status(200).json({
+// 			message: "Avatar updated successfully",
+// 			user: updatedUser,
+// 			imageUrl,
+// 		});
+// 	} catch (err) {
+// 		console.error("Error updating avatar:", err);
+// 		res.status(500).json({ message: "Server error." });
+// 	}
+// };
+
+const updateUserAvatar = async (req, res) => {
+	try {
+		const userId = req.user.id;
+
+		let imageUrl = req.body.image; // mặc định lấy từ body nếu không upload mới
+
+		if (req.file) {
+			const result = await cloudinary.uploader.upload(req.file.path, {
+				folder: "user_avatars",
+				use_filename: true,
+				unique_filename: false,
+			});
+			imageUrl = result.secure_url;
+		}
+
+		// Cập nhật dữ liệu người dùng từ req.body (nếu có)
+		const { email, fullName, username, role } = req.body;
+
+		await sequelize.query(
+			`UPDATE [User] SET 
+				image = :image,
+				email = COALESCE(:email, email),
+				full_name = COALESCE(:fullName, full_name),
+				username = COALESCE(:username, username),
+				role = COALESCE(:role, role)
+			WHERE id = :userId`,
+			{
+				replacements: {
+					image: imageUrl,
+					email,
+					fullName,
+					username,
+					role,
+					userId,
+				},
+				type: sequelize.QueryTypes.UPDATE,
+			}
+		);
+
+		const [updatedUser] = await sequelize.query(`SELECT * FROM [User] WHERE id = :userId`, {
+			replacements: { userId },
+			type: sequelize.QueryTypes.SELECT,
+		});
+
+		res.status(200).json({
+			message: "Avatar and profile updated successfully",
+			data: updatedUser,
+			imageUrl,
+		});
+	} catch (err) {
+		console.error("Error updating avatar and profile:", err);
+		res.status(500).json({ message: "Server error." });
+	}
+};
+
+module.exports = {
+	scheduleAppointment,
+	getAllAppointment,
+	getProfile,
+	updateUserAvatar,
+	updateUserInfo,
+};
