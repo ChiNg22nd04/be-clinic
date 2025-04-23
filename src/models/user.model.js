@@ -68,6 +68,11 @@ const User = sequelize.define(
 			allowNull: true,
 			defaultValue: null,
 		},
+		image: {
+			type: DataTypes.STRING(255),
+			allowNull: true,
+			defaultValue: null,
+		},
 	},
 	{
 		tableName: "[User]", // Chỉ định rõ tên bảng
