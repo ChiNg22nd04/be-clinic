@@ -1,7 +1,4 @@
 const { sequelize } = require("../database/sequelize");
-const Appointments = require("../models/appointments.model");
-const { DATE, DataTypes } = require("sequelize");
-const User = require("../models/user.model");
 const cloudinary = require("../config/cloudinaryConfig");
 const moment = require("moment");
 
@@ -327,14 +324,13 @@ const updateUserAvatar = async (req, res) => {
 
 		if (req.file) {
 			const result = await cloudinary.uploader.upload(req.file.path, {
-				folder: "user_avatars",
+				folder: "user_avatar",
 				use_filename: true,
 				unique_filename: false,
 			});
 			imageUrl = result.secure_url;
 		}
 
-		// Cập nhật dữ liệu người dùng từ req.body (nếu có)
 		const { email, fullName, username, role } = req.body;
 
 		await sequelize.query(

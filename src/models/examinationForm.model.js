@@ -51,6 +51,11 @@ const ExaminationForm = sequelize.define(
 			allowNull: true,
 			defaultValue: null,
 		},
+		image: {
+			type: DataTypes.STRING(255),
+			allowNull: true,
+			defaultValue: null,
+		},
 	},
 	{
 		timestamps: true, // Bật createdAt và updatedAt tự động
