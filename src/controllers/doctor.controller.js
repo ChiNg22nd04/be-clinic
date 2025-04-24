@@ -183,7 +183,7 @@ const updateExaminationForm = async (req, res) => {
 		if (req.files && req.files.length > 0) {
 			for (const file of req.files) {
 				const result = await cloudinary.uploader.upload(file.path, {
-					folder: "examination_forms_record",
+					folder: "user/record",
 					use_filename: true,
 					unique_filename: false,
 				});

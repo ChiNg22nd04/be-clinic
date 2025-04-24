@@ -8,9 +8,10 @@ const {
 	getProfile,
 	updateUserAvatar,
 } = require("../controllers/user.controller");
-const uploadUserAvatar = uploadImage("user");
 
 const router = express.Router();
+const uploadUserAvatar = uploadImage("user/avatar");
+
 router.post("/schedule-appointment", verifyToken, scheduleAppointment);
 router.post("/appointment/get-all", verifyToken, getAllAppointment);
 router.put("/profile", verifyToken, getProfile);

@@ -12,7 +12,7 @@ const {
 } = require("../controllers/doctor.controller");
 
 const router = express.Router();
-const uploadExamination = uploadImage("examination_forms_record");
+const uploadExamination = uploadImage("user/record");
 
 router.get("/medical-examination/get-all", verifyToken, authorizeRole(1), getAllExaminationForm);
 router.get("/medical-examination/get-detail", verifyToken, authorizeRole(1), getExaminationForm);
