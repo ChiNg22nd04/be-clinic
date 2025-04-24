@@ -8,6 +8,7 @@ const {
 	getAllInvoice,
 	getShift,
 	getExaminationForm,
+	getPrescription,
 } = require("../controllers/receptionist.controller");
 
 const router = express.Router();
@@ -19,6 +20,7 @@ router.get("/medical-examination/get-detail", verifyToken, authorizeRole(2), get
 router.post("/invoice/create", verifyToken, authorizeRole(2), createInvoice);
 router.get("/invoice/get-all", verifyToken, authorizeRole(2), getAllInvoice);
 router.put("/shifts/get-detail", verifyToken, authorizeRole(2), getShift);
+router.post("/prescription/form", verifyToken, authorizeRole(2), getPrescription);
 
 router.get("/test", (req, res) => {
 	console.log("✅ Test API called!");

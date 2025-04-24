@@ -328,6 +328,40 @@ const getExaminationForm = async (req, res) => {
 	}
 };
 
+const getPrescription = async (req, res) => {
+	try {
+		const { examinationFormId } = req.body;
+		const id = parseInt(examinationFormId);
+		const data = await sequelize.query(
+			`SELECT 
+			m.id AS medicine_id,
+			m.name AS medicine_name,
+			m.price,
+			m.description,
+			p.quantity,
+			p.usage
+		FROM 
+			Prescription p
+		JOIN 
+			Medicine m ON p.medicine_id = m.id
+		WHERE 
+			p.examination_form_id = :examination_form_id;`,
+			{
+				replacements: { examination_form_id: examinationFormId },
+				type: sequelize.QueryTypes.SELECT,
+			}
+		);
+		console.log("data", data);
+		res.status(200).json({
+			message: "Detail examinationForm successfully",
+			data: data,
+		});
+	} catch (err) {
+		console.error("Error in making update examinationForm:", err);
+		res.status(500).json({ message: "Server error, please try again later." });
+	}
+};
+
 module.exports = {
 	getAppointment,
 	updateStatusAppointment,
@@ -336,4 +370,5 @@ module.exports = {
 	getAllInvoice,
 	getShift,
 	getExaminationForm,
+	getPrescription,
 };
