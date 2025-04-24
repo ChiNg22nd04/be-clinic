@@ -12,14 +12,21 @@ const {
 } = require("../controllers/doctor.controller");
 
 const router = express.Router();
-const uploadExamination = uploadImage("user");
+const uploadExamination = uploadImage("examination_forms_record");
 
 router.get("/medical-examination/get-all", verifyToken, authorizeRole(1), getAllExaminationForm);
 router.get("/medical-examination/get-detail", verifyToken, authorizeRole(1), getExaminationForm);
+// router.put(
+// 	"/medical-examination/update",
+// 	verifyToken,
+// 	uploadExamination.single("record"),
+// 	authorizeRole(1),
+// 	updateExaminationForm
+// );
 router.put(
 	"/medical-examination/update",
 	verifyToken,
-	uploadExamination.single("record"),
+	uploadExamination.array("record", 10), // Cho phép up tối đa 10 ảnh
 	authorizeRole(1),
 	updateExaminationForm
 );

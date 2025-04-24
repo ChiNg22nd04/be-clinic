@@ -1,5 +1,4 @@
 const express = require("express");
-// const multer = require("multer");
 const uploadImage = require("../middleware/upload");
 const { verifyToken, authorizeRole } = require("../middleware/authJwt");
 const {
@@ -12,7 +11,6 @@ const {
 const uploadUserAvatar = uploadImage("user");
 
 const router = express.Router();
-// const upload = multer({ dest: "uploads/" });
 router.post("/schedule-appointment", verifyToken, scheduleAppointment);
 router.post("/appointment/get-all", verifyToken, getAllAppointment);
 router.put("/profile", verifyToken, getProfile);

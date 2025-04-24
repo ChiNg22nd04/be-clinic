@@ -331,7 +331,6 @@ const updateUserAvatar = async (req, res) => {
 			imageUrl = result.secure_url;
 		}
 
-		// Cập nhật dữ liệu người dùng từ req.body (nếu có)
 		const { email, fullName, username, role } = req.body;
 
 		await sequelize.query(

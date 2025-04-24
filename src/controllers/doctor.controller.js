@@ -120,20 +120,78 @@ const getExaminationForm = async (req, res) => {
 	}
 };
 
+// const updateExaminationForm = async (req, res) => {
+// 	try {
+// 		let imageUrl = null;
+
+// 		if (req.file) {
+// 			const result = await cloudinary.uploader.upload(req.file.path, {
+// 				folder: "examination_forms_record",
+// 				use_filename: true,
+// 				unique_filename: false,
+// 			});
+// 			imageUrl = result.secure_url;
+// 			console.log("imageUrl", imageUrl);
+// 		} else if (req.body.image) {
+// 			imageUrl = req.body.image;
+// 		}
+
+// 		const { id, diagnosis, note, status } = req.body;
+
+// 		if (!id || !diagnosis || !status) {
+// 			return res.status(400).json({ message: "Missing required fields." });
+// 		}
+
+// 		const [update] = await sequelize.query(
+// 			`UPDATE [ExaminationForm]
+// 			SET diagnosis = :diagnosis, note = :note, status = :status, image = :image
+// 			WHERE id = :id`,
+// 			{
+// 				replacements: {
+// 					id,
+// 					diagnosis,
+// 					note,
+// 					status,
+// 					image: imageUrl,
+// 				},
+// 				type: sequelize.QueryTypes.UPDATE,
+// 			}
+// 		);
+// 		console.log("update", update);
+
+// 		const [data] = await sequelize.query(`SELECT * FROM [ExaminationForm] WHERE id = :id`, {
+// 			replacements: { id },
+// 			type: sequelize.QueryTypes.SELECT,
+// 		});
+
+// 		console.log("data", data);
+
+// 		res.status(200).json({
+// 			message: "ExaminationForm updated successfully",
+// 			data,
+// 		});
+// 	} catch (err) {
+// 		console.error("Error updating examinationForm:", err);
+// 		res.status(500).json({ message: "Server error, please try again later." });
+// 	}
+// };
+
 const updateExaminationForm = async (req, res) => {
 	try {
-		let imageUrl = null;
+		let imageUrls = [];
 
-		if (req.file) {
-			const result = await cloudinary.uploader.upload(req.file.path, {
-				folder: "examination_forms_record",
-				use_filename: true,
-				unique_filename: false,
-			});
-			imageUrl = result.secure_url;
-			console.log("imageUrl", imageUrl);
+		if (req.files && req.files.length > 0) {
+			for (const file of req.files) {
+				const result = await cloudinary.uploader.upload(file.path, {
+					folder: "examination_forms_record",
+					use_filename: true,
+					unique_filename: false,
+				});
+				imageUrls.push(result.secure_url);
+				console.log("result", result);
+			}
 		} else if (req.body.image) {
-			imageUrl = req.body.image;
+			imageUrls = Array.isArray(req.body.image) ? req.body.image : [req.body.image];
 		}
 
 		const { id, diagnosis, note, status } = req.body;
@@ -152,7 +210,7 @@ const updateExaminationForm = async (req, res) => {
 					diagnosis,
 					note,
 					status,
-					image: imageUrl,
+					image: JSON.stringify(imageUrls), // lưu chuỗi JSON
 				},
 				type: sequelize.QueryTypes.UPDATE,
 			}
@@ -164,8 +222,9 @@ const updateExaminationForm = async (req, res) => {
 			type: sequelize.QueryTypes.SELECT,
 		});
 
+		// parse lại image từ chuỗi JSON
+		data.image = data.image ? JSON.parse(data.image) : [];
 		console.log("data", data);
-
 		res.status(200).json({
 			message: "ExaminationForm updated successfully",
 			data,
