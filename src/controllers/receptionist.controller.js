@@ -131,7 +131,11 @@ const getAllExamination = async (req, res) => {
 				e.examination_date,
 				a.clinic_id,
 				c.clinic_name,
-				e.status
+				c.address,
+				c.phone_number,
+				c.email_address,
+				e.status,
+				e.image
 			FROM [ExaminationForm] e
 			JOIN [User] s ON e.staff_id = s.id          
 			JOIN [MedicalRecords] m ON e.medical_record_id = m.id       
@@ -269,6 +273,61 @@ const getShift = async (req, res) => {
 		res.status(500).json({ message: "Server error, please try again later." });
 	}
 };
+
+const getExaminationForm = async (req, res) => {
+	try {
+		const { id } = req.body;
+
+		const [data] = await sequelize.query(
+			`SELECT 
+			e.id,
+                e.numerical,
+                e.medical_record_id,
+                e.id_appointment,
+                e.staff_id,
+                e.diagnosis,
+                e.note,
+                e.status,
+				m.patient_id,
+				p.full_name AS patient_name,  
+				e.staff_id,
+				s.full_name AS staff_name,   
+				a.specialty_id,
+				sp.specialty_name,
+				a.symptoms,
+				a.appointment_date,
+				e.examination_date,
+				a.clinic_id,
+				c.clinic_name,
+                c.address,
+                c.phone_number,
+                c.email_address,
+				e.status,
+				e.image
+			FROM [ExaminationForm] e
+			JOIN [User] s ON e.staff_id = s.id          
+			JOIN [MedicalRecords] m ON e.medical_record_id = m.id       
+			JOIN [User] p ON p.id = m.patient_id       
+			JOIN [Appointments] a ON a.id = e.id_appointment       
+			JOIN [Specialty] sp ON a.specialty_id = sp.specialty_id
+			JOIN [Clinics] c ON a.clinic_id = c.clinic_id
+			WHERE e.id = :id`,
+			{
+				replacements: { id },
+				type: sequelize.QueryTypes.SELECT,
+			}
+		);
+		console.log(data);
+		res.status(201).json({
+			message: "Appointments fetched successfully",
+			data: data,
+		});
+	} catch (err) {
+		console.error("Error in making appointment:", err);
+		res.status(500).json({ message: "Server error, please try again later." });
+	}
+};
+
 module.exports = {
 	getAppointment,
 	updateStatusAppointment,
@@ -276,4 +335,5 @@ module.exports = {
 	createInvoice,
 	getAllInvoice,
 	getShift,
+	getExaminationForm,
 };
