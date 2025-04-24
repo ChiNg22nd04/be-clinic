@@ -279,52 +279,15 @@ const updateUserInfo = async (req, res) => {
 	}
 };
 
-// const updateUserAvatar = async (req, res) => {
-// 	try {
-// 		const userId = req.user.id;
-
-// 		if (!req.file) {
-// 			return res.status(400).json({ message: "No file uploaded." });
-// 		}
-// 		console.log(req.file.path);
-// 		const result = await cloudinary.uploader.upload(req.file.path, {
-// 			folder: "user_avatars",
-// 			use_filename: true,
-// 			unique_filename: false,
-// 		});
-
-// 		const imageUrl = result.secure_url;
-// 		console.log(imageUrl);
-// 		await sequelize.query(`UPDATE [User] SET image = :image WHERE id = :userId`, {
-// 			replacements: { image: imageUrl, userId },
-// 			type: sequelize.QueryTypes.UPDATE,
-// 		});
-
-// 		const [updatedUser] = await sequelize.query(`SELECT * FROM [User] WHERE id = :userId`, {
-// 			replacements: { userId },
-// 			type: sequelize.QueryTypes.SELECT,
-// 		});
-
-// 		res.status(200).json({
-// 			message: "Avatar updated successfully",
-// 			user: updatedUser,
-// 			imageUrl,
-// 		});
-// 	} catch (err) {
-// 		console.error("Error updating avatar:", err);
-// 		res.status(500).json({ message: "Server error." });
-// 	}
-// };
-
 const updateUserAvatar = async (req, res) => {
 	try {
 		const userId = req.user.id;
 
-		let imageUrl = req.body.image; // mặc định lấy từ body nếu không upload mới
+		let imageUrl = req.body.image;
 
 		if (req.file) {
 			const result = await cloudinary.uploader.upload(req.file.path, {
-				folder: "user_avatar",
+				folder: "user/avatar", // ✅ folder trong Cloudinary
 				use_filename: true,
 				unique_filename: false,
 			});

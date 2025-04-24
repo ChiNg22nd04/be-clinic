@@ -5,27 +5,30 @@ const getAllExaminationForm = async (req, res) => {
 	try {
 		const data = await sequelize.query(
 			`SELECT 
-				e.id,
-				e.numerical,
-				e.medical_record_id,
-				e.id_appointment,
-				e.staff_id,
-				e.diagnosis,
-				e.note,
-				e.status,
-				m.patient_id,
-				p.full_name AS patient_name,  
-				e.staff_id,
-				s.full_name AS staff_name,   
-				a.specialty_id,
-				sp.specialty_name,
-				a.symptoms,
-				a.appointment_date,
-				e.examination_date,
-				a.clinic_id,
-				c.clinic_name,
-				e.status,
-				e.image
+			e.id,
+			e.numerical,
+			e.medical_record_id,
+			e.id_appointment,
+			e.staff_id,
+			e.diagnosis,
+			e.note,
+			e.status,
+			m.patient_id,
+			p.full_name AS patient_name,  
+			e.staff_id,
+			s.full_name AS staff_name,   
+			a.specialty_id,
+			sp.specialty_name,
+			a.symptoms,
+			a.appointment_date,
+			e.examination_date,
+			a.clinic_id,
+			c.clinic_name,
+			c.address,
+			c.phone_number,
+			c.email_address,
+			e.status,
+			e.image
 			FROM [ExaminationForm] e
 			JOIN [User] s ON e.staff_id = s.id          
 			JOIN [MedicalRecords] m ON e.medical_record_id = m.id       
@@ -47,26 +50,6 @@ const getAllExaminationForm = async (req, res) => {
 		console.error("Error in making appointment:", err);
 		res.status(500).json({ message: "Server error, please try again later." });
 	}
-	// try {
-	// 	// Lấy ngày hiện tại theo định dạng YYYY-MM-DD
-	// 	const currentDate = moment().format("YYYY-MM-DD");
-	// 	const examinationForm = await sequelize.query(
-	// 		`SELECT * FROM [ExaminationForm] WHERE CAST(examination_date AS DATE) = :examination_date`,
-	// 		{
-	// 			replacements: { examination_date: currentDate },
-	// 			type: sequelize.QueryTypes.SELECT,
-	// 		}
-	// 	);
-
-	// 	console.log(examinationForm);
-	// 	res.status(200).json({
-	// 		message: "ExaminationForm fetched successfully",
-	// 		data: examinationForm,
-	// 	});
-	// } catch (err) {
-	// 	console.error("Error in making examinationForm:", err);
-	// 	res.status(500).json({ message: "Server error, please try again later." });
-	// }
 };
 
 const getExaminationForm = async (req, res) => {
@@ -75,14 +58,14 @@ const getExaminationForm = async (req, res) => {
 
 		const [data] = await sequelize.query(
 			`SELECT 
-				e.id,
-				e.numerical,
-				e.medical_record_id,
-				e.id_appointment,
-				e.staff_id,
-				e.diagnosis,
-				e.note,
-				e.status,
+			e.id,
+                e.numerical,
+                e.medical_record_id,
+                e.id_appointment,
+                e.staff_id,
+                e.diagnosis,
+                e.note,
+                e.status,
 				m.patient_id,
 				p.full_name AS patient_name,  
 				e.staff_id,
@@ -94,6 +77,9 @@ const getExaminationForm = async (req, res) => {
 				e.examination_date,
 				a.clinic_id,
 				c.clinic_name,
+                c.address,
+                c.phone_number,
+                c.email_address,
 				e.status,
 				e.image
 			FROM [ExaminationForm] e
@@ -183,7 +169,7 @@ const updateExaminationForm = async (req, res) => {
 		if (req.files && req.files.length > 0) {
 			for (const file of req.files) {
 				const result = await cloudinary.uploader.upload(file.path, {
-					folder: "examination_forms_record",
+					folder: "user/record",
 					use_filename: true,
 					unique_filename: false,
 				});
