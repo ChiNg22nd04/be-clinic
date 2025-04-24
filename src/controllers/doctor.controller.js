@@ -1,7 +1,5 @@
 const { sequelize } = require("../database/sequelize");
-const Appointments = require("../models/appointments.model");
-const { DATE, DataTypes } = require("sequelize");
-const moment = require("moment");
+const cloudinary = require("../config/cloudinaryConfig");
 
 const getAllExaminationForm = async (req, res) => {
 	try {
@@ -26,7 +24,8 @@ const getAllExaminationForm = async (req, res) => {
 				e.examination_date,
 				a.clinic_id,
 				c.clinic_name,
-				e.status
+				e.status,
+				e.image
 			FROM [ExaminationForm] e
 			JOIN [User] s ON e.staff_id = s.id          
 			JOIN [MedicalRecords] m ON e.medical_record_id = m.id       
@@ -95,7 +94,8 @@ const getExaminationForm = async (req, res) => {
 				e.examination_date,
 				a.clinic_id,
 				c.clinic_name,
-				e.status
+				e.status,
+				e.image
 			FROM [ExaminationForm] e
 			JOIN [User] s ON e.staff_id = s.id          
 			JOIN [MedicalRecords] m ON e.medical_record_id = m.id       
@@ -118,54 +118,60 @@ const getExaminationForm = async (req, res) => {
 		console.error("Error in making appointment:", err);
 		res.status(500).json({ message: "Server error, please try again later." });
 	}
-
-	// try {
-	// 	const { id } = req.body;
-	// 	console.log(id);
-	// 	const [detail] = await sequelize.query(`SELECT * FROM [ExaminationForm] WHERE id = :id`, {
-	// 		replacements: { id },
-	// 		type: sequelize.QueryTypes.SELECT,
-	// 	});
-
-	// 	console.log(detail);
-	// 	res.status(200).json({
-	// 		message: "Detail examinationForm fetched successfully",
-	// 		data: detail,
-	// 	});
-	// } catch (err) {
-	// 	console.error("Error in making detail examinationForm:", err);
-	// 	res.status(500).json({ message: "Server error, please try again later." });
-	// }
 };
 
 const updateExaminationForm = async (req, res) => {
 	try {
+		let imageUrl = null;
+
+		if (req.file) {
+			const result = await cloudinary.uploader.upload(req.file.path, {
+				folder: "examination_forms_record",
+				use_filename: true,
+				unique_filename: false,
+			});
+			imageUrl = result.secure_url;
+			console.log("imageUrl", imageUrl);
+		} else if (req.body.image) {
+			imageUrl = req.body.image;
+		}
+
 		const { id, diagnosis, note, status } = req.body;
-		console.log(req.body);
-		await sequelize.query(
-			`UPDATE [ExaminationForm] SET diagnosis= :diagnosis, note = :note, 
-			status = :status WHERE id = :id`,
+
+		if (!id || !diagnosis || !status) {
+			return res.status(400).json({ message: "Missing required fields." });
+		}
+
+		const [update] = await sequelize.query(
+			`UPDATE [ExaminationForm] 
+			SET diagnosis = :diagnosis, note = :note, status = :status, image = :image 
+			WHERE id = :id`,
 			{
 				replacements: {
-					id: id,
+					id,
 					diagnosis,
 					note,
-					status: status,
+					status,
+					image: imageUrl,
 				},
 				type: sequelize.QueryTypes.UPDATE,
 			}
 		);
+		console.log("update", update);
+
 		const [data] = await sequelize.query(`SELECT * FROM [ExaminationForm] WHERE id = :id`, {
-			replacements: { id: id },
+			replacements: { id },
 			type: sequelize.QueryTypes.SELECT,
 		});
+
 		console.log("data", data);
+
 		res.status(200).json({
-			message: "Detail examinationForm successfully",
-			data: data,
+			message: "ExaminationForm updated successfully",
+			data,
 		});
 	} catch (err) {
-		console.error("Error in making update examinationForm:", err);
+		console.error("Error updating examinationForm:", err);
 		res.status(500).json({ message: "Server error, please try again later." });
 	}
 };
