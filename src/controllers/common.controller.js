@@ -122,6 +122,24 @@ const getAllShiftDoctor = async (req, res) => {
 	}
 };
 
+const getAllArticles = async (req, res) => {
+	try {
+		const data = await sequelize.query(
+			`SELECT 
+				*
+			FROM [Articles] 
+			`,
+			{
+				type: sequelize.QueryTypes.SELECT,
+			}
+		);
+		console.log(data);
+		res.status(200).json({ success: true, data });
+	} catch (error) {
+		res.status(500).json({ success: false, message: "Server error" });
+	}
+};
+
 module.exports = {
 	getAllSpecialties,
 	getAllClinics,
@@ -129,4 +147,5 @@ module.exports = {
 	getAllSpecialtiesDoctor,
 	getAllShiftDoctor,
 	getShiftByIDDoctor,
+	getAllArticles,
 };
