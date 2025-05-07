@@ -128,7 +128,7 @@ const getAllArticles = async (req, res) => {
 			`SELECT 
 				a.article_id,
 				a.title,
-				a.sub_title,
+				a
 				a.content,
 				a.author,
 				a.published_date,

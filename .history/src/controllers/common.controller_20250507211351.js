@@ -125,10 +125,10 @@ const getAllShiftDoctor = async (req, res) => {
 const getAllArticles = async (req, res) => {
 	try {
 		const data = await sequelize.query(
-			`SELECT 
+						`
+			SELECT 
 				a.article_id,
 				a.title,
-				a.sub_title,
 				a.content,
 				a.author,
 				a.published_date,
@@ -147,7 +147,6 @@ const getAllArticles = async (req, res) => {
 				type: sequelize.QueryTypes.SELECT,
 			}
 		);
-		console.log(data);
 		res.status(200).json({ success: true, data });
 	} catch (error) {
 		console.error(error);

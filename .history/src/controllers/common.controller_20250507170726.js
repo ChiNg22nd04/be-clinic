@@ -126,23 +126,9 @@ const getAllArticles = async (req, res) => {
 	try {
 		const data = await sequelize.query(
 			`SELECT 
-				a.article_id,
-				a.title,
-				a.sub_title,
-				a.content,
-				a.author,
-				a.published_date,
-				a.category,
-				f.id AS file_id,
-				f.filename_download,
-				f.title AS file_title,
-				f.type AS file_type,
-				f.filesize,
-				f.width,
-				f.height
-			FROM Articles a
-			LEFT JOIN articles_files ar ON a.article_id = ar.id
-			LEFT JOIN directus_files f ON ar.directus_files_id = f.id`,
+				*
+			FROM [Articles] 
+			`,
 			{
 				type: sequelize.QueryTypes.SELECT,
 			}
@@ -150,7 +136,6 @@ const getAllArticles = async (req, res) => {
 		console.log(data);
 		res.status(200).json({ success: true, data });
 	} catch (error) {
-		console.error(error);
 		res.status(500).json({ success: false, message: "Server error" });
 	}
 };
