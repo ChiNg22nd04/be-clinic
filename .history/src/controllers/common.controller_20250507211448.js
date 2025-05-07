@@ -128,7 +128,6 @@ const getAllArticles = async (req, res) => {
 			`SELECT 
 				a.article_id,
 				a.title,
-				a.sub_title,
 				a.content,
 				a.author,
 				a.published_date,
@@ -139,13 +138,10 @@ const getAllArticles = async (req, res) => {
 				f.type AS file_type,
 				f.filesize,
 				f.width,
-				f.height,
-				t.topic_name,
-				t.id AS topic_id
+				f.height
 			FROM Articles a
 			LEFT JOIN articles_files ar ON a.article_id = ar.id
-			LEFT JOIN directus_files f ON ar.directus_files_id = f.id
-			LEFT JOIN Topic t ON a.category = t.id`,
+			LEFT JOIN directus_files f ON ar.directus_files_id = f.id`,
 			{
 				type: sequelize.QueryTypes.SELECT,
 			}

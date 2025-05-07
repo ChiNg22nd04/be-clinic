@@ -125,32 +125,28 @@ const getAllShiftDoctor = async (req, res) => {
 const getAllArticles = async (req, res) => {
 	try {
 		const data = await sequelize.query(
-			`SELECT 
-				a.article_id,
-				a.title,
-				a.sub_title,
-				a.content,
-				a.author,
-				a.published_date,
-				a.category,
-				f.id AS file_id,
-				f.filename_download,
-				f.title AS file_title,
-				f.type AS file_type,
-				f.filesize,
-				f.width,
-				f.height,
-				t.topic_name,
-				t.id AS topic_id
-			FROM Articles a
-			LEFT JOIN articles_files ar ON a.article_id = ar.id
-			LEFT JOIN directus_files f ON ar.directus_files_id = f.id
-			LEFT JOIN Topic t ON a.category = t.id`,
+			`
+SELECT 
+    a.article_id,
+    a.title,
+    a.content,
+    a.author,
+    a.published_date,
+    a.category,
+    f.id AS file_id,
+    f.filename_download,
+    f.title AS file_title,
+    f.type AS file_type,
+    f.filesize,
+    f.width,
+    f.height
+FROM Articles a
+LEFT JOIN articles_files ar ON a.article_id = ar.id
+LEFT JOIN directus_files f ON ar.directus_files_id = f.id`,
 			{
 				type: sequelize.QueryTypes.SELECT,
 			}
 		);
-		console.log(data);
 		res.status(200).json({ success: true, data });
 	} catch (error) {
 		console.error(error);
