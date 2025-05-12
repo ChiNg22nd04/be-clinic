@@ -68,6 +68,33 @@ const getAllSpecialtiesDoctor = async (req, res) => {
 	}
 };
 
+const getAllDoctor = async (req, res) => {
+	try {
+		const role = 1;
+		const docList = await sequelize.query(
+			`SELECT 
+				ps.staff_id, 
+				u.full_name, 
+				ps.specialty_id, 
+				ps.clinic_id, 
+				ps.department, 
+				ps.years_of_experience, 
+				ps.education
+			FROM [ProfileStaff] ps
+			JOIN [User] u ON u.id = ps.staff_id
+			WHERE u.role = :role;`,
+			{
+				replacements: { role },
+				type: sequelize.QueryTypes.SELECT,
+			}
+		);
+		console.log(docList);
+		res.status(200).json({ success: true, data: docList });
+	} catch (error) {
+		res.status(500).json({ success: false, message: "Server error" });
+	}
+};
+
 // lấy ca làm theo id bác sĩ
 const getShiftByIDDoctor = async (req, res) => {
 	try {
@@ -206,4 +233,5 @@ module.exports = {
 	getShiftByIDDoctor,
 	getAllArticles,
 	getArticlesByID,
+	getAllDoctor,
 };
