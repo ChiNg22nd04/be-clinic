@@ -104,15 +104,23 @@ const getAllDoctor = async (req, res) => {
 		const docList = await sequelize.query(
 			`SELECT 
 				ps.staff_id, 
+				ps.thumbnail,
 				u.full_name, 
 				ps.specialty_id, 
-				ps.clinic_id, 
+				s.specialty_name,
 				ps.department, 
 				ps.years_of_experience, 
-				ps.education
+				ps.education,
+				ps.introduce,
+				ps.member,
+				ps.expert,
+				c.clinic_id,
+				c.clinic_name
 			FROM [ProfileStaff] ps
 			JOIN [User] u ON u.id = ps.staff_id
-			WHERE u.role = :role;`,
+			JOIN [Specialty] s ON s.specialty_id = ps.specialty_id
+			JOIN [Clinics] c ON c.clinic_id = ps.clinic_id
+			WHERE u.role = role`,
 			{
 				replacements: { role },
 				type: sequelize.QueryTypes.SELECT,
