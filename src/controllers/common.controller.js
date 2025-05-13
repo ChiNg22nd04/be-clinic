@@ -68,10 +68,10 @@ const getAllSpecialtiesDoctor = async (req, res) => {
 	}
 };
 
-const getAllDoctor = async (req, res) => {
+const getDoctorByID = async (req, res) => {
 	try {
-		const role = 1;
-		const docList = await sequelize.query(
+		const { staffId } = req.body;
+		const [doc] = await sequelize.query(
 			`SELECT 
 				ps.staff_id, 
 				u.full_name, 
@@ -79,10 +79,48 @@ const getAllDoctor = async (req, res) => {
 				ps.clinic_id, 
 				ps.department, 
 				ps.years_of_experience, 
-				ps.education
+				ps.education,
+				s.specialty_id,
+				s.specialty_name,
+				c.clinic_id,
+				c.clinic_name
 			FROM [ProfileStaff] ps
 			JOIN [User] u ON u.id = ps.staff_id
-			WHERE u.role = :role;`,
+			JOIN [Specialty] s ON s.specialty_id = ps.specialty_id
+			JOIN [Clinics] c ON c.clinic_id = ps.clinic_id
+			WHERE u.id = staff_id`,
+			{ replacements: { staff_id: staffId }, type: sequelize.QueryTypes.SELECT }
+		);
+		console.log(doc);
+		res.status(200).json({ success: true, data: doc });
+	} catch (error) {
+		res.status(500).json({ success: false, message: "Server error" });
+	}
+};
+
+const getAllDoctor = async (req, res) => {
+	try {
+		const role = 1;
+		const docList = await sequelize.query(
+			`SELECT 
+				ps.staff_id, 
+				ps.thumbnail,
+				u.full_name, 
+				ps.specialty_id, 
+				s.specialty_name,
+				ps.department, 
+				ps.years_of_experience, 
+				ps.education,
+				ps.introduce,
+				ps.member,
+				ps.expert,
+				c.clinic_id,
+				c.clinic_name
+			FROM [ProfileStaff] ps
+			JOIN [User] u ON u.id = ps.staff_id
+			JOIN [Specialty] s ON s.specialty_id = ps.specialty_id
+			JOIN [Clinics] c ON c.clinic_id = ps.clinic_id
+			WHERE u.role = role`,
 			{
 				replacements: { role },
 				type: sequelize.QueryTypes.SELECT,
@@ -234,4 +272,5 @@ module.exports = {
 	getAllArticles,
 	getArticlesByID,
 	getAllDoctor,
+	getDoctorByID,
 };
