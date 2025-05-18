@@ -1,0 +1,64 @@
+openapi: 3.0.0
+info:
+    title: Hospital Management API
+    version: 1.0.0
+    description: API hệ thống bao gồm Admin, User, Doctor, Patient...
+
+servers:
+    - url: http://localhost:3000
+      description: Local server
+
+tags:
+    - name: Admin
+      description: Quản lý nhân viên và bệnh nhân
+    - name: User
+      description: Đăng ký, đăng nhập và thông tin người dùng
+
+paths:
+    # Admin APIs
+    /admin/staff/get-all:
+        get:
+            tags: [Admin]
+            summary: Lấy tất cả nhân viên
+            #...
+
+    /admin/staff/create:
+        post:
+            tags: [Admin]
+            summary: Tạo nhân viên
+            #...
+
+    # User APIs
+    /auth/register:
+        post:
+            tags: [User]
+            summary: Đăng ký người dùng
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: "#/components/schemas/RegisterInput"
+            responses:
+                201:
+                    description: Đăng ký thành công
+                400:
+                    description: Lỗi đầu vào
+
+    /auth/login:
+        post:
+            tags: [User]
+            summary: Đăng nhập
+            #...
+
+components:
+    schemas:
+        RegisterInput:
+            type: object
+            required: [email, password]
+            properties:
+                email:
+                    type: string
+                password:
+                    type: string
+
+        # ... other schemas như User, CreateStaffInput

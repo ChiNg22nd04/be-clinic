@@ -3,9 +3,11 @@ const { verifyToken, authorizeRole } = require("../middleware/authJwt");
 const { validateUser } = require("../middleware/validateUser");
 const { getAllStaff, getAllPatient, createStaff } = require("../controllers/admin.controller");
 const router = express.Router();
-// API đặt lịch khám bệnh
+
 router.get("/staff/get-all", verifyToken, authorizeRole(0), getAllStaff);
+
 router.post("/staff/create", verifyToken, authorizeRole(0), validateUser("register"), createStaff);
+
 router.get("/patient/get-all", verifyToken, authorizeRole(0), getAllPatient);
 
 router.get("/test", (req, res) => {
