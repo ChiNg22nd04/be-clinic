@@ -15,14 +15,9 @@ const router = express.Router();
 const uploadExamination = uploadImage("user/record");
 
 router.get("/medical-examination/get-all", verifyToken, authorizeRole(1), getAllExaminationForm);
+
 router.get("/medical-examination/get-detail", verifyToken, authorizeRole(1), getExaminationForm);
-// router.put(
-// 	"/medical-examination/update",
-// 	verifyToken,
-// 	uploadExamination.single("record"),
-// 	authorizeRole(1),
-// 	updateExaminationForm
-// );
+
 router.put(
 	"/medical-examination/update",
 	verifyToken,
@@ -32,7 +27,9 @@ router.put(
 );
 
 router.post("/prescription/update-form", verifyToken, authorizeRole(1), updatePrescription);
+
 router.post("/prescription/form", verifyToken, authorizeRole(1), getPrescription);
+
 router.get("/medicine/get-all", verifyToken, authorizeRole(1), getMedicine);
 
 router.get("/test", (req, res) => {

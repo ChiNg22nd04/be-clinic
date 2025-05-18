@@ -13,9 +13,13 @@ const router = express.Router();
 const uploadUserAvatar = uploadImage("user/avatar");
 
 router.post("/schedule-appointment", verifyToken, scheduleAppointment);
+
 router.post("/appointment/get-all", verifyToken, getAllAppointment);
+
 router.put("/profile", verifyToken, getProfile);
+
 router.put("/upload-profile", verifyToken, updateUserInfo);
+
 router.put("/upload-avatar", verifyToken, uploadUserAvatar.single("avatar"), updateUserAvatar);
 
 router.get("/test", (req, res) => {
