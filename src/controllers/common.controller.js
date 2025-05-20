@@ -189,6 +189,7 @@ const getAllShiftDoctor = async (req, res) => {
 
 const getAllArticles = async (req, res) => {
 	try {
+		const topicId = 3;
 		const data = await sequelize.query(
 			`SELECT 
 				a.article_id,
@@ -198,6 +199,7 @@ const getAllArticles = async (req, res) => {
 				a.author,
 				a.published_date,
 				a.category,
+				ar.directus_files_id,
 				f.id AS file_id,
 				f.filename_download,
 				f.title AS file_title,
@@ -208,10 +210,12 @@ const getAllArticles = async (req, res) => {
 				t.topic_name,
 				t.id AS topic_id
 			FROM Articles a
-			LEFT JOIN articles_files ar ON a.article_id = ar.id
+			LEFT JOIN articles_files ar ON a.article_id = ar.Articles_article_id
 			LEFT JOIN directus_files f ON ar.directus_files_id = f.id
-			LEFT JOIN Topic t ON a.category = t.id`,
+			LEFT JOIN Topic t ON a.category = t.id
+			WHERE a.category != :topic_id`,
 			{
+				replacements: { topic_id: topicId },
 				type: sequelize.QueryTypes.SELECT,
 			}
 		);
@@ -223,9 +227,9 @@ const getAllArticles = async (req, res) => {
 	}
 };
 
-const getArticlesByID = async (req, res) => {
+const getAllAchievements = async (req, res) => {
 	try {
-		const { articleId } = req.body;
+		const topicId = 3;
 		const data = await sequelize.query(
 			`SELECT 
 				a.article_id,
@@ -235,6 +239,7 @@ const getArticlesByID = async (req, res) => {
 				a.author,
 				a.published_date,
 				a.category,
+				ar.directus_files_id,
 				f.id AS file_id,
 				f.filename_download,
 				f.title AS file_title,
@@ -245,12 +250,12 @@ const getArticlesByID = async (req, res) => {
 				t.topic_name,
 				t.id AS topic_id
 			FROM Articles a
-			LEFT JOIN articles_files ar ON a.article_id = ar.id
+			LEFT JOIN articles_files ar ON a.article_id = ar.Articles_article_id
 			LEFT JOIN directus_files f ON ar.directus_files_id = f.id
 			LEFT JOIN Topic t ON a.category = t.id
-			WHERE article_id = :article_id`,
+			WHERE a.category = :topic_id`,
 			{
-				replacements: { article_id: articleId },
+				replacements: { topic_id: topicId },
 				type: sequelize.QueryTypes.SELECT,
 			}
 		);
@@ -270,7 +275,7 @@ module.exports = {
 	getAllShiftDoctor,
 	getShiftByIDDoctor,
 	getAllArticles,
-	getArticlesByID,
 	getAllDoctor,
 	getDoctorByID,
+	getAllAchievements,
 };
