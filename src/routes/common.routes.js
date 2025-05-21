@@ -3,6 +3,8 @@ const CommonController = require("../controllers/common.controller");
 
 const router = express.Router();
 
+router.get("/", CommonController.getIntroduction);
+
 router.get("/specialties", CommonController.getAllSpecialties);
 
 router.get("/specialties", CommonController.getAllSpecialties);
@@ -20,7 +22,6 @@ router.post("/shifts/doctor-id", CommonController.getShiftByIDDoctor);
 router.get("/articles", CommonController.getAllArticles);
 
 router.get("/achievements", CommonController.getAllAchievements);
-
 
 router.get("/professional", CommonController.getAllDoctor);
 

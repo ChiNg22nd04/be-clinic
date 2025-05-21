@@ -267,6 +267,16 @@ const getAllAchievements = async (req, res) => {
 	}
 };
 
+const getIntroduction = async (req, res) => {
+	try {
+		const data = await sequelize.query(`SELECT * FROM [Introduction]`);
+		console.log(data);
+		res.status(200).json({ success: true, data });
+	} catch (error) {
+		res.status(500).json({ success: false, message: "Server error" });
+	}
+};
+
 module.exports = {
 	getAllSpecialties,
 	getAllClinics,
@@ -278,4 +288,5 @@ module.exports = {
 	getAllDoctor,
 	getDoctorByID,
 	getAllAchievements,
+	getIntroduction,
 };
