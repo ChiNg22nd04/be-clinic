@@ -168,72 +168,6 @@ const getProfile = async (req, res) => {
 	}
 };
 
-// const updateUserProfile = async (req, res) => {
-// 	try {
-// 		const userId = req.user.id;
-// 		const { email, full_name, role, username } = req.body;
-// 		let imageUrl = undefined;
-
-// 		// Nếu có ảnh, upload lên Cloudinary
-// 		if (req.file) {
-// 			const result = await cloudinary.uploader.upload(req.file.path, {
-// 				folder: "user_avatars",
-// 				use_filename: true,
-// 				unique_filename: false,
-// 			});
-// 			imageUrl = result.secure_url;
-// 		}
-
-// 		// Lấy dữ liệu người dùng hiện tại bằng raw SQL
-// 		const [users] = await sequelize.query(`SELECT * FROM [Users] WHERE id = :userId`, {
-// 			replacements: { userId },
-// 			type: sequelize.QueryTypes.SELECT,
-// 		});
-
-// 		if (!users) {
-// 			return res.status(404).json({ message: "User not found." });
-// 		}
-
-// 		const currentUser = users; // vì query trả về 1 object chứ không phải array
-
-// 		// Cập nhật thông tin người dùng
-// 		await sequelize.query(
-// 			`UPDATE [Users]
-// 			 SET email = :email,
-// 			     full_name = :full_name,
-// 			     role = :role,
-// 			     username = :username,
-// 			     image = :image
-// 			 WHERE id = :userId`,
-// 			{
-// 				replacements: {
-// 					email: email || currentUser.email,
-// 					full_name: full_name || currentUser.full_name,
-// 					role: role !== undefined ? role : currentUser.role,
-// 					username: username || currentUser.username,
-// 					image: imageUrl || currentUser.image,
-// 					userId,
-// 				},
-// 				type: sequelize.QueryTypes.UPDATE,
-// 			}
-// 		);
-
-// 		// Trả về thông tin mới sau khi cập nhật
-// 		const [updatedUsers] = await sequelize.query(`SELECT * FROM [Users] WHERE id = :userId`, {
-// 			replacements: { userId },
-// 			type: sequelize.QueryTypes.SELECT,
-// 		});
-
-// 		res.status(200).json({
-// 			message: "User profile updated successfully.",
-// 			user: updatedUsers,
-// 		});
-// 	} catch (err) {
-// 		console.error("Error updating user profile:", err);
-// 		res.status(500).json({ message: "Server error, please try again later." });
-// 	}
-// };
-
 const updateUserInfo = async (req, res) => {
 	try {
 		const userId = req.user.id;
@@ -333,10 +267,66 @@ const updateUserAvatar = async (req, res) => {
 	}
 };
 
+const getAllExamination = async (req, res) => {
+	try {
+		const { patientId } = req.body;
+		console.log(req.body);
+
+		const data = await sequelize.query(
+			`SELECT 
+				ex.staff_id, 
+				u1.full_name as staff_name,
+				ex.id,
+				ex.id_appointment,
+				ex.examination_date,
+				ex.diagnosis,
+				ex.status,
+				u.id AS patient_id,
+				u.full_name AS full_name,
+				a.clinic_id,
+				a.specialty_id,
+				c.clinic_name,
+				s.specialty_name
+			FROM [ExaminationForm] ex
+			JOIN [User] u1 ON u1.id = ex.staff_id
+			JOIN [MedicalRecords] m ON m.id = ex.medical_record_id
+			JOIN [User] u ON u.id = m.patient_id
+			JOIN [Appointments] a ON a.id = ex.id_appointment
+			JOIN [Clinics] c ON c.clinic_id = a.clinic_id
+			JOIN [Specialty] s ON s.specialty_id = a.specialty_id
+			WHERE u.id = :patient_id AND ex.status != 0
+			ORDER BY ex.examination_date DESC`,
+			{
+				replacements: { patient_id: patientId },
+				type: sequelize.QueryTypes.SELECT,
+			}
+		);
+		console.log(data);
+
+		res.status(201).json({
+			message: "Get All Examination successful",
+			data,
+		});
+	} catch (err) {
+		res.status(500).json({ message: "Server error." });
+	}
+};
+
+const getMedicalRecord = async (req, res) => {
+	try {
+		const { patientId } = req.body;
+		console.log(req.body);
+	} catch (err) {
+		console.error("Error in getting medical record:", err);
+	}
+};
+
 module.exports = {
 	scheduleAppointment,
 	getAllAppointment,
 	getProfile,
 	updateUserAvatar,
 	updateUserInfo,
+	getAllExamination,
+	getMedicalRecord,
 };

@@ -7,6 +7,7 @@ const {
 	updateUserInfo,
 	getProfile,
 	updateUserAvatar,
+	getAllExamination,
 } = require("../controllers/user.controller");
 
 const router = express.Router();
@@ -14,7 +15,9 @@ const uploadUserAvatar = uploadImage("user/avatar");
 
 router.post("/schedule-appointment", verifyToken, scheduleAppointment);
 
-router.post("/appointment/get-all", verifyToken, getAllAppointment);
+router.post("/appointments", verifyToken, getAllAppointment);
+
+router.post("/medical-history", verifyToken, getAllExamination);
 
 router.put("/profile", verifyToken, getProfile);
 
