@@ -4,5 +4,5 @@
 .env
 .editorconfig
 .vscode
-.doc
+*.doc
 history
