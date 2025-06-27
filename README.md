@@ -264,8 +264,8 @@ CMD ["npm", "start"]
 ## 📞 Liên hệ
 
 -   **Tác giả**: [Nguyễn Lan Chi]
--   **Email**: [chiinglan4464@gmail.com]
--   **GitHub**: [github.com/ChiNg22nd04]
+-   **Email**: [chiinglan4464@gmail.com](chiinglan4464@gmail.com)
+-   **GitHub**: [ChiNg22nd04](https://github.com/ChiNg22nd04)
 
 ## 🙏 Cảm ơn
 
